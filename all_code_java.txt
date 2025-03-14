@@ -1,0 +1,2459 @@
+package com.promts.promts_test_server;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class PromtsTestServerApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(PromtsTestServerApplication.class, args);
+	}
+
+}
+package com.promts.promts_test_server.controller;
+
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
+
+@RestController
+@RequestMapping("/app")
+public class AppController {
+
+    @GetMapping("/health")
+    public ResponseEntity<?> healthCheck(){
+        return ResponseEntity.ok().body(Map.of("available", true));
+    }
+}
+package com.promts.promts_test_server.controller;
+
+import com.promts.promts_test_server.dto.ChatBot.inbound.CreateChatBotDTO;
+import com.promts.promts_test_server.service.Auth.MockAuthService;
+import com.promts.promts_test_server.service.ChatBotService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/chatbots")
+public class ChatBotController {
+
+    @Autowired
+    public ChatBotService chatBotService;
+    @Autowired
+    public AuthService authService;
+
+    // Эндпоинт для получения чат-ботов по определенному запросу
+    @GetMapping()
+    public ResponseEntity<?> getChatBots(@RequestHeader String authorization,
+                                         @RequestHeader Long id,
+                                         @RequestParam(name = "search", required = false, defaultValue = "") String search,
+                                         @RequestParam(name = "limit", required = false, defaultValue = "10") int limit,
+                                         @RequestParam(name = "offset", required = false, defaultValue = "0") int offset) throws InterruptedException {
+
+        // Сначала делаем проверку токена и получаем uid пользователя
+        String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
+
+        // Отправляем логику в сервис
+        return ResponseEntity.ok().body(chatBotService.getChatBots(search, limit, offset, id, uidFirebase));
+    }
+
+    // Эндпоинт получения информации о конкретном чат-боте
+    @GetMapping("/{chat_bot_id}")
+    public ResponseEntity<?> getChatBot(@PathVariable Long chat_bot_id,
+                                        @RequestHeader String authorization,
+                                        @RequestHeader Long id) throws InterruptedException {
+
+        // Сначала делаем проверку токена и получаем uid пользователя
+        String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
+
+        return ResponseEntity.ok().body(chatBotService.getChatBot(chat_bot_id, id, uidFirebase));
+    }
+
+    // Эндпоинт для создания чат-бота
+    @PostMapping
+    public ResponseEntity<?> createChatBot(@RequestHeader String authorization,
+                                           @RequestHeader Long id,
+                                           @RequestBody CreateChatBotDTO createChatBotDTO) throws InterruptedException {
+
+        // Сначала делаем проверку токена и получаем uid пользователя
+        String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
+
+        return ResponseEntity.ok().body(chatBotService.createChatBot(createChatBotDTO, id, uidFirebase));
+    }
+}
+package com.promts.promts_test_server.controller;
+
+import com.promts.promts_test_server.dto.Chat.inbound.CreateChatDTO;
+import com.promts.promts_test_server.dto.Chat.inbound.CreateChatWithChatBotDTO;
+import com.promts.promts_test_server.dto.Chat.inbound.UpdateChatSettingsDTO;
+import com.promts.promts_test_server.service.Auth.MockAuthService;
+import com.promts.promts_test_server.service.ChatService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/chats")
+public class ChatController {
+
+    @Autowired
+    private AuthService authService;
+    @Autowired
+    private ChatService chatService;
+
+    @PostMapping()
+    public ResponseEntity<?> createChat(@RequestHeader String authorization,
+                                          @RequestHeader Long id,
+                                          @RequestBody CreateChatDTO createChatDTO) throws InterruptedException {
+
+        // Сначала делаем проверку токена и получаем uid пользователя
+        String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
+
+        return ResponseEntity.ok().body(chatService.createChat(uidFirebase, id, createChatDTO));
+    }
+
+    @PostMapping("/chatbot")
+    public ResponseEntity<?> createChatWithChatBot(@RequestHeader String authorization,
+                                          @RequestHeader Long id,
+                                          @RequestBody CreateChatWithChatBotDTO createChatDTO) throws InterruptedException {
+
+        // Сначала делаем проверку токена и получаем uid пользователя
+        String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
+
+        return ResponseEntity.ok().body(chatService.createChatWithChatBot(uidFirebase, id, createChatDTO));
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getUserChats (@RequestHeader String authorization,
+                                           @RequestHeader Long id) throws InterruptedException {
+
+        // Сначала делаем проверку токена и получаем uid пользователя
+        String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
+
+        return ResponseEntity.ok().body(chatService.getUserChats(uidFirebase, id));
+    }
+
+    @PutMapping
+    public ResponseEntity<?> updateChatSettings(@RequestHeader String authorization,
+                                                @RequestHeader Long id,
+                                                @RequestBody UpdateChatSettingsDTO updateChatSettingsDTO){
+
+        // Сначала делаем проверку токена и получаем uid пользователя
+        String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
+
+        return null;
+    }
+
+
+    //TODO Доделать эндпоинт потом
+    @DeleteMapping("/{chatid}")
+    public ResponseEntity<?> deleteChat (@PathVariable Long chatid,
+                                         @RequestHeader String authorization,
+                                         @RequestHeader Long id) {
+
+        // Сначала делаем проверку токена и получаем uid пользователя
+        String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
+
+        return null;
+    }
+}
+package com.promts.promts_test_server.controller;
+
+import com.promts.promts_test_server.dto.Message.inbound.DeleteMessagesDTO;
+import com.promts.promts_test_server.dto.Message.inbound.NewMessageDTO;
+import com.promts.promts_test_server.dto.Message.inbound.RegenerateMessageDTO;
+import com.promts.promts_test_server.service.Auth.MockAuthService;
+import com.promts.promts_test_server.service.Message.MessageService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/messages")
+public class MessageController {
+
+    @Autowired
+    private AuthService authService;
+    @Autowired
+    private MessageService messageService;
+
+    @PostMapping
+    public ResponseEntity<?> generateNewMessage(@RequestHeader String authorization,
+                                                @RequestHeader Long id,
+                                                @RequestBody NewMessageDTO newMessageDTO){
+
+        // Сначала делаем проверку токена и получаем uid пользователя
+        String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
+
+        return ResponseEntity.ok().body(messageService.generateMessage(uidFirebase, id, newMessageDTO));
+    }
+
+    //TODO Этот эндпоинт реализую позже
+    @PostMapping("/regenerate")
+    public ResponseEntity<?> regenerateMessage(@RequestHeader String authorization,
+                                                @RequestHeader Long id,
+                                                @RequestBody RegenerateMessageDTO regenerateMessageDTO){
+
+        // Сначала делаем проверку токена и получаем uid пользователя
+        String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
+
+        return null;
+    }
+
+    @GetMapping("/{chatId}")
+    public ResponseEntity<?> getMessagesByChatId(@RequestHeader String authorization,
+                                                 @RequestHeader Long id,
+                                                 @PathVariable Long chatId){
+
+        // Сначала делаем проверку токена и получаем uid пользователя
+        String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
+
+        return ResponseEntity.ok().body(messageService.getMessagesByChatId(uidFirebase, id, chatId));
+    }
+
+
+    //TODO Сделать позже
+    @DeleteMapping
+    public ResponseEntity<?> deleteMessagesByMessageId(@RequestHeader String authorization,
+                                                       @RequestHeader Long id,
+                                                       @RequestBody DeleteMessagesDTO deleteMessagesDTO) {
+
+        // Сначала делаем проверку токена и получаем uid пользователя
+        String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
+
+        return null;
+    }
+
+}
+package com.promts.promts_test_server.controller;
+
+import com.promts.promts_test_server.dto.User.inbound.RegistrationDTO;
+import com.promts.promts_test_server.dto.User.inbound.UpdateUserRequestDTO;
+import com.promts.promts_test_server.service.Auth.MockAuthService;
+import com.promts.promts_test_server.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.logging.Logger;
+
+
+@RestController
+@RequestMapping("/user")
+public class UserController {
+
+    private static final Logger logger = Logger.getLogger(UserController.class.getName());
+
+    @Autowired
+    private UserService userService;
+    @Autowired
+    public AuthService authService;
+
+    // Эндпоинт регистрации нового пользователя
+    @PostMapping("/registration")
+    public ResponseEntity<?> newUser(@RequestHeader String authorization,
+                                     @RequestBody RegistrationDTO registrationDTO) throws RuntimeException, InterruptedException {
+
+        // Сначала делаем проверку токена и получаем uid пользователя
+        String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
+
+        // Отправляем логику в сервис
+        return ResponseEntity.ok().body(userService.createUser(registrationDTO.getEmail(), uidFirebase));
+    }
+
+    // Эндпоинт входа пользователя и получения информации о нем, его чатах и существующих нейросетях
+    @GetMapping("/login")
+    public ResponseEntity<?> getUser(@RequestHeader String authorization) throws RuntimeException, InterruptedException {
+
+        logger.info(authorization);
+
+        // Сначала делаем проверку токена и получаем uid пользователя
+        String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
+
+        // Отправляем логику в сервис
+        return ResponseEntity.ok().body(userService.getUser(uidFirebase));
+    }
+
+    // Эндпоинт обновления настроек пользователя
+    @PutMapping()
+    public ResponseEntity<?> updateUser(@RequestHeader String authorization,
+                                        @RequestHeader Long id,
+                                        @RequestBody UpdateUserRequestDTO requestDTO) throws RuntimeException, InterruptedException {
+
+        // Сначала делаем проверку токена и получаем uid пользователя
+        String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
+
+        // Отправляем логику в сервис
+        return ResponseEntity.ok().body(userService.updateUser(uidFirebase, id, requestDTO));
+    }
+}
+package com.promts.promts_test_server.dto.Chat.inbound;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class ChatModelDTO {
+    private Long id;
+    private Long userId;
+    private Long chatBotId;
+    private String chatName;
+    private Long modelUriId;
+    private double temperature;
+    private String context;
+    private boolean starredChat;
+    private boolean useMemory;
+    private boolean updateMemory;
+    private boolean canUseMemory;
+    private boolean canUpdateMemory;
+    private boolean canEditModelUri;
+    private boolean canEditContext;
+    private LocalDateTime dateEdit;
+    private LocalDateTime dateCreate;
+}
+
+package com.promts.promts_test_server.dto.Chat.inbound;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class CreateChatDTO {
+    private Long modelUriId;
+    private double temperature;
+    private String context;
+    private boolean useMemory;
+    private boolean updateMemory;
+}
+package com.promts.promts_test_server.dto.Chat.inbound;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class CreateChatWithChatBotDTO {
+    private Long chatBotId;
+    private Long modelUriId;
+    private double temperature;
+    private String context;
+    private boolean useMemory;
+    private boolean updateMemory;
+}
+package com.promts.promts_test_server.dto.Chat.inbound;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class UpdateChatSettingsDTO {
+    private Long chatId;
+    private Long modelUriId;
+    private double temperature;
+    private String context;
+    private boolean useMemory;
+    private boolean updateMemory;
+}
+package com.promts.promts_test_server.dto.Chat.outbound;
+
+import com.promts.promts_test_server.dto.User.outbound.GetUserResponseDTO;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class ChatListShortDTO {
+    private List<ChatList> chats;
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ChatList {
+        private Long id;
+        private String chatName;
+        private boolean starredChat;
+        private LocalDateTime dateEdit;
+    }
+}
+package com.promts.promts_test_server.dto.Chat.outbound;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class CreatedChatDTO {
+    private Long id;
+    private Long chatBotId;
+    private String chatName;
+    private Long modelUriId;
+    private double temperature;
+    private String context;
+    private boolean starredChat;
+    private boolean useMemory;
+    private boolean updateMemory;
+    private boolean canUseMemory;
+    private boolean canUpdateMemory;
+    private boolean canEditModelUri;
+    private boolean canEditContext;
+    private LocalDateTime dateEdit;
+    private LocalDateTime dateCreate;
+}
+package com.promts.promts_test_server.dto.Chat.outbound;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class UpdatedChatSettingsDTO {
+    private Long chatId;
+    private Long modelUriId;
+    private double temperature;
+    private String context;
+    private boolean useMemory;
+    private boolean updateMemory;
+}
+package com.promts.promts_test_server.dto.ChatBot.inbound;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class  CreateChatBotDTO {
+    private String chatBotName;
+    private String chatBotDesc;
+    private String helloMessage;
+    private Long modelUriId;
+    private double temperature;
+    private String context;
+    private boolean canUseMemory;
+    private boolean canUpdateMemory;
+    private boolean canEditModelUri;
+    private boolean canEditContext;
+}
+package com.promts.promts_test_server.dto.ChatBot.outbound;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class ChatBotResponseDTO {
+
+    private Long id;
+    private String chatBotName;
+    private String chatBotDesc;
+    private String helloMessage;
+    private Long modelUriId;
+    private double temperature;
+    private String context;
+    private boolean isSelectedByRedact;
+    private boolean canUseMemory;
+    private boolean canUpdateMemory;
+    private boolean canEditModelUri;
+    private boolean canEditContext;
+    private int messagesToday;
+    private int totalMessages;
+}
+package com.promts.promts_test_server.dto.ChatBot.outbound;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.List;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class ChatBotsResponseDTO {
+    private List<ChatBotShort> chatBots;
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class ChatBotShort{
+        private Long id;
+        private String chatBotName;
+        private String chatBotDesc;
+        private int messagesToday;
+        private int totalMessages;
+        private boolean isSelectedByRedact;
+    }
+}
+package com.promts.promts_test_server.dto.Generator.inbound;
+
+import lombok.*;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class ResponseGeneratedMessageDTO {
+
+    private MessageDTO message;
+    private UsageDTO usage;
+
+    @Setter
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class MessageDTO {
+
+        private String role;
+        private String text;
+    }
+
+    @Setter
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class UsageDTO {
+
+        private int totalTokens;
+        private int completionTokens;
+        private int inputTextTokens;
+        private double cost;
+
+    }
+}
+package com.promts.promts_test_server.dto.Generator.inbound;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class ResponseGeneratedVectorDTO {
+}
+package com.promts.promts_test_server.dto.Generator.outbound;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class MessageForGenerator {
+    private String role;
+    private String text;
+}
+package com.promts.promts_test_server.dto.Generator.outbound;
+
+import lombok.*;
+
+import java.util.List;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class RequestGenerateMessageDTO {
+
+    private List<Message> messages;
+    private double temperature;
+
+    @Getter
+    @Setter
+    @Data
+    public static class Message {
+
+        private String role;
+        private List<Content> content;
+
+        @Getter
+        @Setter
+        @Data
+        public static class Content {
+            private String type;
+            private String text;
+        }
+    }
+}
+package com.promts.promts_test_server.dto.Generator.outbound;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class RequestGenerateVectorDTO {
+}
+package com.promts.promts_test_server.dto.Message.inbound;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class DeleteMessagesDTO {
+    private Long messageId;
+    private Long modelUriId;
+}
+package com.promts.promts_test_server.dto.Message.inbound;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class MessageModelDTO {
+    private Long id;
+    private Long chatId;
+    private Long modelUriId;
+    private boolean oldMessage;
+    private String role;
+    private String text;
+    private String type;
+    private LocalDateTime dateCreate;
+}
+package com.promts.promts_test_server.dto.Message.inbound;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class NewMessageDTO {
+    private String text;
+    private Long modelUriId;
+    private Long chatId;
+}
+package com.promts.promts_test_server.dto.Message.inbound;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class RegenerateMessageDTO {
+    private String messageId;
+    private Long modelUriId;
+}
+package com.promts.promts_test_server.dto.Message.outbound;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class ListMessages {
+
+    private List<Message> messages;
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Message{
+        private Long id;
+        private String text;
+        private String role;
+        private LocalDateTime dateCreate;
+    }
+}
+package com.promts.promts_test_server.dto.Message.outbound;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class MessageGenerateResponse {
+
+    private MessageRequest messageRequest;
+    private User user;
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class MessageRequest{
+        private Long id;
+        private String text;
+        private LocalDateTime dateCreate;
+        private boolean stopped;
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class User{
+        private boolean memoryUpdated;
+        private String newMemory;
+        private double cost;
+        private double money;
+    }
+}
+package com.promts.promts_test_server.dto.Message.outbound;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class SaveMessageDTO {
+    private Long chatId;
+    private Long modelUriId;
+    private boolean oldMessage;
+    private String role;
+    private String text;
+    private String type;
+}
+package com.promts.promts_test_server.dto.Message.outbound;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class SuccessDeleteMessagesDTO {
+    private boolean success;
+    private String message;
+}
+package com.promts.promts_test_server.dto.NeuralNetwork.internal;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class NeuralNetworkDTO {
+    private Long id;
+    private String name;
+    private String systemName;
+    private String desc;
+}
+package com.promts.promts_test_server.dto.User.inbound;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class RegistrationDTO {
+    private String email;
+}
+package com.promts.promts_test_server.dto.User.inbound;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class UpdateUserRequestDTO {
+    private boolean memoryEnabled;
+    private boolean aiCanUpdateMemory;
+    private String memory;
+    private Long standardModelUriId;
+}
+package com.promts.promts_test_server.dto.User.inbound;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserInfoFromModelDTO {
+
+    private User user;
+    private List<ChatList> chats;
+    private List<NeuralNetwork> neuralNetworks;
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class User{
+        private Long id;
+        private String email;
+        private String uidFirebase;
+        private String role;
+        private Long standardModelUriId;
+        private double money;
+        private String memory;
+        private boolean memoryEnabled;
+        private boolean aiCanUpdateMemory;
+        private LocalDateTime dateCreate;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ChatList{
+        private Long id;
+        private String chatName;
+        private boolean starredChat;
+        private LocalDateTime dateEdit;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class NeuralNetwork {
+        private Long id;
+        private String name;
+        private String systemName;
+        private String desc;
+    }
+}
+package com.promts.promts_test_server.dto.User.outbound;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class GetUserResponseDTO {
+
+    private User user;
+    private List<ChatList> chats;
+    private List<NeuralNetwork> neuralNetworks;
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class User{
+        private Long id;
+        private String email;
+        private String role;
+        private double money;
+        private String memory;
+        private boolean memoryEnabled;
+        private boolean aiCanUpdateMemory;
+        private Long standardModelUriId;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ChatList{
+        private Long id;
+        private String chatName;
+        private boolean starredChat;
+        private LocalDateTime dateEdit;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class NeuralNetwork {
+        private Long id;
+        private String name;
+        private String systemName;
+        private String desc;
+    }
+}
+package com.promts.promts_test_server.dto.User.outbound;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class UpdateUserResponseDTO {
+    private boolean updated;
+    private boolean memoryEnabled;
+    private boolean aiCanUpdateMemory;
+    private String memory;
+    private Long standardModelUriId;
+}
+package com.promts.promts_test_server.exception;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+public class ErrorResponse {
+    private String error;
+    private String message;
+}
+package com.promts.promts_test_server.exception;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class GlobalException extends RuntimeException {
+    private String error;
+    private String message;
+}
+package com.promts.promts_test_server.exception;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(GlobalException.class)
+    public ResponseEntity<ErrorResponse> handleCustomException(GlobalException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(ex.getError(), ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleException() {
+        ErrorResponse errorResponse = new ErrorResponse("INTERNAL_ERROR", "Внутренняя ошибка сервера");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+    }
+}
+package com.promts.promts_test_server.repository.Chat;
+
+import com.promts.promts_test_server.dto.Chat.inbound.CreateChatDTO;
+import com.promts.promts_test_server.dto.Chat.inbound.CreateChatWithChatBotDTO;
+import com.promts.promts_test_server.dto.Chat.inbound.UpdateChatSettingsDTO;
+import com.promts.promts_test_server.dto.Chat.outbound.ChatListShortDTO;
+import com.promts.promts_test_server.dto.Chat.outbound.CreatedChatDTO;
+import com.promts.promts_test_server.dto.Chat.outbound.UpdatedChatSettingsDTO;
+
+public interface ChatRepository {
+    CreatedChatDTO createChat(String uidFirebase, Long id, CreateChatDTO createChatDTO) throws InterruptedException;
+    CreatedChatDTO createChatWithChatBot(String uidFirebase, Long id, CreateChatWithChatBotDTO createChatWithChatBotDTO) throws InterruptedException;
+    ChatListShortDTO getUserChats(String uidFirebase, Long id) throws InterruptedException;
+    UpdatedChatSettingsDTO updateChatSettings(String uidFirebase, Long id, UpdateChatSettingsDTO updateChatSettingsDTO) throws InterruptedException;
+}
+package com.promts.promts_test_server.repository.Chat;
+
+import com.promts.promts_test_server.dto.Chat.inbound.ChatModelDTO;
+import com.promts.promts_test_server.dto.Chat.inbound.CreateChatDTO;
+import com.promts.promts_test_server.dto.Chat.inbound.CreateChatWithChatBotDTO;
+import com.promts.promts_test_server.dto.Chat.inbound.UpdateChatSettingsDTO;
+import com.promts.promts_test_server.dto.Chat.outbound.ChatListShortDTO;
+import com.promts.promts_test_server.dto.Chat.outbound.CreatedChatDTO;
+import com.promts.promts_test_server.dto.Chat.outbound.UpdatedChatSettingsDTO;
+import com.promts.promts_test_server.repository.ChatBot.MockChatBotRepository;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Repository;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+@Repository
+@Profile("mock")
+public class MockChatRepository implements ChatRepository{
+    @Override
+    public CreatedChatDTO createChat(String uidFirebase, Long id, CreateChatDTO createChatDTO) throws InterruptedException {
+
+        // Текущая дата и время для примера
+        LocalDateTime now = LocalDateTime.now();
+
+        // Имитация ожидания запроса
+        Thread.sleep(1000);
+
+        mockResponseChats.add(new ChatModelDTO(
+                (long)mockResponseChats.size()+1,
+                id,
+                null,
+                "Чат номер " + (long)mockResponseChats.size()+1,
+                createChatDTO.getModelUriId(),
+                createChatDTO.getTemperature(),
+                createChatDTO.getContext(),
+                false,
+                createChatDTO.isUseMemory(),
+                createChatDTO.isUpdateMemory(),
+                true,
+                true,
+                true,
+                true,
+                now,
+                now
+        ));
+
+        return new CreatedChatDTO(
+                (long)mockResponseChats.size(),
+                null,
+                "Чат номер " + (long)mockResponseChats.size(),
+                createChatDTO.getModelUriId(),
+                createChatDTO.getTemperature(),
+                createChatDTO.getContext(),
+                false,
+                createChatDTO.isUseMemory(),
+                createChatDTO.isUpdateMemory(),
+                true,
+                true,
+                true,
+                true,
+                now,
+                now
+        );
+    }
+
+    @Override
+    public CreatedChatDTO createChatWithChatBot(String uidFirebase, Long id, CreateChatWithChatBotDTO createChatWithChatBotDTO) throws InterruptedException {
+
+
+        // Текущая дата и время для примера
+        LocalDateTime now = LocalDateTime.now();
+
+        // Имитация ожидания запроса
+        Thread.sleep(1000);
+
+        mockResponseChats.add(new ChatModelDTO(
+                (long)mockResponseChats.size()+1,
+                id,
+                createChatWithChatBotDTO.getChatBotId(),
+                "Чат номер " + (long)mockResponseChats.size()+1,
+                createChatWithChatBotDTO.getModelUriId(),
+                createChatWithChatBotDTO.getTemperature(),
+                createChatWithChatBotDTO.getContext(),
+                false,
+                mockChatBotRepository.mockResponseChatBot.get(Math.toIntExact(createChatWithChatBotDTO.getChatBotId())-1).isCanUseMemory(),
+                mockChatBotRepository.mockResponseChatBot.get(Math.toIntExact(createChatWithChatBotDTO.getChatBotId())-1).isCanUpdateMemory(),
+                mockChatBotRepository.mockResponseChatBot.get(Math.toIntExact(createChatWithChatBotDTO.getChatBotId())-1).isCanUseMemory(),
+                mockChatBotRepository.mockResponseChatBot.get(Math.toIntExact(createChatWithChatBotDTO.getChatBotId())-1).isCanUpdateMemory(),
+                mockChatBotRepository.mockResponseChatBot.get(Math.toIntExact(createChatWithChatBotDTO.getChatBotId())-1).isCanEditModelUri(),
+                mockChatBotRepository.mockResponseChatBot.get(Math.toIntExact(createChatWithChatBotDTO.getChatBotId())-1).isCanEditContext(),
+                now,
+                now
+        ));
+
+        return new CreatedChatDTO(
+                (long)mockResponseChats.size(),
+                createChatWithChatBotDTO.getChatBotId(),
+                "Чат номер " + (long)mockResponseChats.size(),
+                createChatWithChatBotDTO.getModelUriId(),
+                createChatWithChatBotDTO.getTemperature(),
+                createChatWithChatBotDTO.getContext(),
+                false,
+                mockChatBotRepository.mockResponseChatBot.get(Math.toIntExact(createChatWithChatBotDTO.getChatBotId())-1).isCanUseMemory(),
+                mockChatBotRepository.mockResponseChatBot.get(Math.toIntExact(createChatWithChatBotDTO.getChatBotId())-1).isCanUpdateMemory(),
+                mockChatBotRepository.mockResponseChatBot.get(Math.toIntExact(createChatWithChatBotDTO.getChatBotId())-1).isCanUseMemory(),
+                mockChatBotRepository.mockResponseChatBot.get(Math.toIntExact(createChatWithChatBotDTO.getChatBotId())-1).isCanUpdateMemory(),
+                mockChatBotRepository.mockResponseChatBot.get(Math.toIntExact(createChatWithChatBotDTO.getChatBotId())-1).isCanEditModelUri(),
+                mockChatBotRepository.mockResponseChatBot.get(Math.toIntExact(createChatWithChatBotDTO.getChatBotId())-1).isCanEditContext(),
+                now,
+                now
+        );
+    }
+
+    @Override
+    public ChatListShortDTO getUserChats(String uidFirebase, Long id) throws InterruptedException {
+
+        // Имитация ожидания запроса
+        Thread.sleep(1000);
+
+        ChatListShortDTO responseDTO = new ChatListShortDTO();
+        List<ChatListShortDTO.ChatList> chatList = new ArrayList<>();
+
+        for (ChatModelDTO mockResponseChat : mockResponseChats) {
+            if (Objects.equals(mockResponseChat.getUserId(), id)) {
+                chatList.add(new ChatListShortDTO.ChatList(
+                        mockResponseChat.getId(),
+                        mockResponseChat.getChatName(),
+                        mockResponseChat.isStarredChat(),
+                        mockResponseChat.getDateEdit()
+                ));
+            }
+        }
+        responseDTO.setChats(chatList);
+
+        return responseDTO;
+    }
+
+    @Override
+    public UpdatedChatSettingsDTO updateChatSettings(String uidFirebase, Long id, UpdateChatSettingsDTO updateChatSettingsDTO) throws InterruptedException {
+
+        // Имитация ожидания запроса
+        Thread.sleep(1000);
+
+        mockResponseChats.get(Math.toIntExact(updateChatSettingsDTO.getChatId()-1)).setModelUriId(updateChatSettingsDTO.getModelUriId());
+        mockResponseChats.get(Math.toIntExact(updateChatSettingsDTO.getChatId()-1)).setTemperature(updateChatSettingsDTO.getTemperature());
+        mockResponseChats.get(Math.toIntExact(updateChatSettingsDTO.getChatId()-1)).setContext(updateChatSettingsDTO.getContext());
+        mockResponseChats.get(Math.toIntExact(updateChatSettingsDTO.getChatId()-1)).setUseMemory(updateChatSettingsDTO.isUseMemory());
+        mockResponseChats.get(Math.toIntExact(updateChatSettingsDTO.getChatId()-1)).setUpdateMemory(updateChatSettingsDTO.isUpdateMemory());
+
+        return new UpdatedChatSettingsDTO(
+                updateChatSettingsDTO.getChatId(),
+                updateChatSettingsDTO.getModelUriId(),
+                updateChatSettingsDTO.getTemperature(),
+                updateChatSettingsDTO.getContext(),
+                updateChatSettingsDTO.isUseMemory(),
+                updateChatSettingsDTO.isUpdateMemory()
+        );
+    }
+
+
+    @Autowired
+    private MockChatBotRepository mockChatBotRepository;
+
+    // Контейнер для хранения моков чатов
+    public final List<ChatModelDTO> mockResponseChats = new ArrayList<>();
+
+    @PostConstruct
+    private void initMockResponseChats() {
+        // Текущая дата и время для примера
+        LocalDateTime now = LocalDateTime.now();
+
+        mockResponseChats.add(new ChatModelDTO(
+                1L,
+                2L,
+                null,
+                "Обычный чат 1",
+                1L,
+                0.7,
+                "Контекст для обычного чата 1",
+                false,
+                true,
+                false,
+                true,
+                true,
+                true,
+                true,
+                now.minusMinutes(10),
+                now.minusHours(1)
+        ));
+
+        mockResponseChats.add(new ChatModelDTO(
+                2L,
+                2L,
+                1L,
+                "Чат с ботом",
+                2L,
+                0.5,
+                "Ты помощник по программированию",
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+                now.minusMinutes(20),
+                now.minusHours(2)
+        ));
+
+        mockResponseChats.add(new ChatModelDTO(
+                3L,
+                2L,
+                null,
+                "Чат обновления памяти",
+                1L,
+                0.8,
+                "Контекст для чата обновления памяти",
+                false,
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+                now.minusMinutes(30),
+                now.minusHours(3)
+        ));
+
+        mockResponseChats.add(new ChatModelDTO(
+                4L,
+                2L,
+                null,
+                "Закрепленный чат",
+                3L,
+                0.6,
+                "Контекст закрепленного чата",
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+                now.minusMinutes(5),
+                now.minusHours(4)
+        ));
+
+        mockResponseChats.add(new ChatModelDTO(
+                5L,
+                2L,
+                null,
+                "Чат с редактированием контекста",
+                2L,
+                0.9,
+                "Первоначальный контекст",
+                false,
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+                now.minusMinutes(15),
+                now.minusHours(5)
+        ));
+    }
+
+}
+package com.promts.promts_test_server.repository.Chat;
+
+import com.promts.promts_test_server.dto.Chat.inbound.CreateChatDTO;
+import com.promts.promts_test_server.dto.Chat.inbound.CreateChatWithChatBotDTO;
+import com.promts.promts_test_server.dto.Chat.inbound.UpdateChatSettingsDTO;
+import com.promts.promts_test_server.dto.Chat.outbound.ChatListShortDTO;
+import com.promts.promts_test_server.dto.Chat.outbound.CreatedChatDTO;
+import com.promts.promts_test_server.dto.Chat.outbound.UpdatedChatSettingsDTO;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Repository;
+
+@Repository
+@Profile("main")
+public class ModelChatRepository implements ChatRepository{
+    @Override
+    public CreatedChatDTO createChat(String uidFirebase, Long id, CreateChatDTO createChatDTO) {
+        return null;
+    }
+
+    @Override
+    public CreatedChatDTO createChatWithChatBot(String uidFirebase, Long id, CreateChatWithChatBotDTO createChatWithChatBotDTO) {
+        return null;
+    }
+
+    @Override
+    public ChatListShortDTO getUserChats(String uidFirebase, Long id) throws InterruptedException {
+        return null;
+    }
+
+    @Override
+    public UpdatedChatSettingsDTO updateChatSettings(String uidFirebase, Long id, UpdateChatSettingsDTO updateChatSettingsDTO) throws InterruptedException {
+        return null;
+    }
+}
+package com.promts.promts_test_server.repository.ChatBot;
+
+import com.promts.promts_test_server.dto.ChatBot.inbound.CreateChatBotDTO;
+import com.promts.promts_test_server.dto.ChatBot.outbound.ChatBotResponseDTO;
+import com.promts.promts_test_server.dto.ChatBot.outbound.ChatBotsResponseDTO;
+
+public interface ChatBotRepository {
+    ChatBotsResponseDTO getAllChatBotsBySpec(Long id, String uidFirebase, String search, int offset, int limit) throws InterruptedException;
+    ChatBotResponseDTO getChatBotById(Long id, String uidFirebase, Long chatBotId) throws InterruptedException;
+    ChatBotResponseDTO createChatBotById(Long id, String uidFirebase, CreateChatBotDTO createChatBotDTO) throws InterruptedException;
+}
+package com.promts.promts_test_server.repository.ChatBot;
+
+import com.promts.promts_test_server.dto.ChatBot.inbound.CreateChatBotDTO;
+import com.promts.promts_test_server.dto.ChatBot.outbound.ChatBotResponseDTO;
+import com.promts.promts_test_server.dto.ChatBot.outbound.ChatBotsResponseDTO;
+import jakarta.annotation.PostConstruct;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Repository
+@Profile("mock")
+public class MockChatBotRepository implements ChatBotRepository {
+
+    @Override
+    public ChatBotsResponseDTO getAllChatBotsBySpec(Long id, String uidFirebase, String search, int offset, int limit) throws InterruptedException {
+
+        // Имитация ожидания запроса
+        Thread.sleep(1000);
+
+        ChatBotsResponseDTO responseDTOS = new ChatBotsResponseDTO();
+        List<ChatBotsResponseDTO.ChatBotShort> chatBotShort = new ArrayList<>();
+        for (ChatBotResponseDTO chatBotResponseDTO : mockResponseChatBot) {
+            chatBotShort.add(new ChatBotsResponseDTO.ChatBotShort(
+                    chatBotResponseDTO.getId(),
+                    chatBotResponseDTO.getChatBotName(),
+                    chatBotResponseDTO.getChatBotDesc(),
+                    chatBotResponseDTO.getMessagesToday(),
+                    chatBotResponseDTO.getTotalMessages(),
+                    chatBotResponseDTO.isSelectedByRedact()
+            ));
+        }
+        responseDTOS.setChatBots(chatBotShort);
+        return responseDTOS;
+    }
+
+    @Override
+    public ChatBotResponseDTO getChatBotById(Long id, String uidFirebase, Long chatBotId) throws InterruptedException {
+
+        // Имитация ожидания запроса
+        Thread.sleep(1000);
+
+        return mockResponseChatBot.get((int)(id - 1));
+    }
+
+    @Override
+    public ChatBotResponseDTO createChatBotById(Long id, String uidFirebase, CreateChatBotDTO createChatBotDTO) throws InterruptedException {
+
+        // Имитация ожидания запроса
+        Thread.sleep(1000);
+
+        ChatBotResponseDTO newChatBot = new ChatBotResponseDTO(
+                (long) (mockResponseChatBot.size()+1),
+                createChatBotDTO.getChatBotName(),
+                createChatBotDTO.getChatBotDesc(),
+                createChatBotDTO.getHelloMessage(),
+                createChatBotDTO.getModelUriId(),
+                createChatBotDTO.getTemperature(),
+                createChatBotDTO.getContext(),
+                false,
+                createChatBotDTO.isCanUseMemory(),
+                createChatBotDTO.isCanUpdateMemory(),
+                createChatBotDTO.isCanEditModelUri(),
+                createChatBotDTO.isCanEditContext(),
+                0,
+                0
+        );
+
+    mockResponseChatBot.add(newChatBot);
+        return newChatBot;
+    }
+
+
+    // Контейнер для хранения моков чат-ботов
+    public final List<ChatBotResponseDTO> mockResponseChatBot = new ArrayList<>();
+
+    @PostConstruct
+    private void initMockResponseChatBot(){
+        mockResponseChatBot.add(new ChatBotResponseDTO(
+                1L,
+                "Помощник по программированию",
+                "Помогает с вопросами по Python, Java и другим языкам.",
+                "Что будем считать?",
+                1L,
+                0.5,
+                "Ты помощник по программированию",
+                true,
+                true,
+                true,
+                true,
+                true,
+                123,
+                100));
+        mockResponseChatBot.add(new ChatBotResponseDTO(
+                2L,
+                "Финансовый советник",
+                "Помогает с вопросами по инвестициям и бюджету.",
+                "Что будем считать?",
+                2L,
+                0.7,
+                "Ты помощник по финансам",
+                false,
+                true,
+                false,
+                true,
+                true,
+                87,
+                599));
+    }
+}
+package com.promts.promts_test_server.repository.ChatBot;
+
+import com.promts.promts_test_server.dto.ChatBot.inbound.CreateChatBotDTO;
+import com.promts.promts_test_server.dto.ChatBot.outbound.ChatBotResponseDTO;
+import com.promts.promts_test_server.dto.ChatBot.outbound.ChatBotsResponseDTO;
+
+public class ModelChatBotRepository implements ChatBotRepository{
+    @Override
+    public ChatBotsResponseDTO getAllChatBotsBySpec(Long id, String uidFirebase, String search, int offset, int limit) {
+        return null;
+    }
+
+    @Override
+    public ChatBotResponseDTO getChatBotById(Long id, String uidFirebase, Long chatBotId) {
+        return null;
+    }
+
+    @Override
+    public ChatBotResponseDTO createChatBotById(Long id, String uidFirebase, CreateChatBotDTO createChatBotDTO) {
+        return null;
+    }
+}
+package com.promts.promts_test_server.repository.Generator;
+
+/*
+Этот репозиторий отвечает за обращение в сервис для генерации сообщений
+ */
+
+import com.promts.promts_test_server.dto.Generator.inbound.ResponseGeneratedMessageDTO;
+import com.promts.promts_test_server.dto.Generator.inbound.ResponseGeneratedVectorDTO;
+import com.promts.promts_test_server.dto.Generator.outbound.MessageForGenerator;
+
+import java.util.List;
+
+public interface GeneratorRepository {
+    ResponseGeneratedMessageDTO generateMessage(String modelUri, List<MessageForGenerator> text, String context, double temperature);
+    ResponseGeneratedVectorDTO generateVector(String modelUri, String text);
+}
+package com.promts.promts_test_server.repository.Generator;
+
+/*
+Моковый генератор, хранит в себе заранее сгенерированные сообщения
+ */
+
+import com.promts.promts_test_server.dto.Generator.inbound.ResponseGeneratedMessageDTO;
+import com.promts.promts_test_server.dto.Generator.inbound.ResponseGeneratedVectorDTO;
+import com.promts.promts_test_server.dto.Generator.outbound.MessageForGenerator;
+import com.promts.promts_test_server.exception.GlobalException;
+import jakarta.annotation.PostConstruct;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Repository
+@Profile("mock")
+public class MockGeneratorRepository implements GeneratorRepository{
+
+
+    // Пока сообщения выводятся в соответствии от выбранной нейросети, это сделано только для мока
+    @Override
+    public ResponseGeneratedMessageDTO generateMessage(String modelUri, List<MessageForGenerator> text, String context, double temperature) {
+        return switch (modelUri) {
+            case "YandexGPT 5 Pro" -> mockGeneratedMessage.getFirst();
+            case "DeepSeek V3" -> mockGeneratedMessage.get(1);
+            case "ChatGPT 4o mini" -> mockGeneratedMessage.get(2);
+            default -> throw new GlobalException("NO_EXISTED_MODEL", "Такой модели для генерации не существует");
+        };
+    }
+
+    // Для фронта пока что достаточно без реализации векторов, они нужны только для хранения в бд, поэтому они позже
+    @Override
+    public ResponseGeneratedVectorDTO generateVector(String modelUri, String text) {
+        return null;
+    }
+
+    // Контейнер для хранения сообщений, которые "сгенерированы" нейросетью
+    public List<ResponseGeneratedMessageDTO> mockGeneratedMessage = new ArrayList<>();
+
+    @PostConstruct
+    private void initMockGeneratedMessage(){
+        mockGeneratedMessage.add(new ResponseGeneratedMessageDTO(
+                new ResponseGeneratedMessageDTO.MessageDTO(
+                        "assistant",
+                        "# Привет!"
+                ),
+                new ResponseGeneratedMessageDTO.UsageDTO(10, 5, 5, 0.001)
+        ));
+
+        mockGeneratedMessage.add(new ResponseGeneratedMessageDTO(
+                new ResponseGeneratedMessageDTO.MessageDTO(
+                        "assistant",
+                        "## Информация\n\n- Привет!\n- Как дела?\n- Всё отлично!"
+                ),
+                new ResponseGeneratedMessageDTO.UsageDTO(25, 15, 10, 0.002)
+        ));
+
+        mockGeneratedMessage.add(new ResponseGeneratedMessageDTO(
+                new ResponseGeneratedMessageDTO.MessageDTO(
+                        "assistant",
+                        "### Полное руководство\n\n**Добро пожаловать в наше руководство!**\n\nВ этом сообщении вы найдете:\n\n1. Введение\n2. Примеры использования\n3. Рекомендации по работе\n\n```java\n// Пример кода для вывода приветствия\nSystem.out.println(\"Hello, World!\");\n```\n\nДополнительная информация доступна на нашем [сайте](https://example.com)."
+                ),
+                new ResponseGeneratedMessageDTO.UsageDTO(50, 30, 20, 0.005)
+        ));
+    }
+}
+package com.promts.promts_test_server.repository.Generator;
+
+import com.promts.promts_test_server.dto.Generator.inbound.ResponseGeneratedMessageDTO;
+import com.promts.promts_test_server.dto.Generator.inbound.ResponseGeneratedVectorDTO;
+import com.promts.promts_test_server.dto.Generator.outbound.MessageForGenerator;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+@Profile("model")
+public class ModelGeneratorRepository implements GeneratorRepository{
+    @Override
+    public ResponseGeneratedMessageDTO generateMessage(String modelUri, List<MessageForGenerator> text, String context, double temperature) {
+        return null;
+    }
+
+    @Override
+    public ResponseGeneratedVectorDTO generateVector(String modelUri, String text) {
+        return null;
+    }
+}
+package com.promts.promts_test_server.repository.Message;
+
+/*
+Репозиторий для обращения в бд по сообщениям
+ */
+
+import com.promts.promts_test_server.dto.Message.inbound.MessageModelDTO;
+import com.promts.promts_test_server.dto.Message.outbound.SaveMessageDTO;
+
+
+import java.util.List;
+
+public interface MessageRepository {
+    List<MessageModelDTO> getAllChatMessagesByChatId (String uidFirebase, Long id, Long chatId);
+    MessageModelDTO createNewMessage(String uidFirebase, Long id, Long chatId, SaveMessageDTO newMessage);
+}
+package com.promts.promts_test_server.repository.Message;
+
+import com.promts.promts_test_server.dto.Chat.inbound.ChatModelDTO;
+import com.promts.promts_test_server.dto.Message.inbound.MessageModelDTO;
+import com.promts.promts_test_server.dto.Message.outbound.SaveMessageDTO;
+import com.promts.promts_test_server.exception.GlobalException;
+import com.promts.promts_test_server.repository.Chat.MockChatRepository;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Repository;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+@Repository
+@Profile("mock")
+public class MockMessageRepository implements MessageRepository{
+    @Override
+    public List<MessageModelDTO> getAllChatMessagesByChatId(String uidFirebase, Long id, Long chatId) {
+
+        Optional<ChatModelDTO> chatModelOpt = mockChatRepository.mockResponseChats.stream()
+                .filter(chat -> Objects.equals(chat.getId(), chatId))
+                .findFirst();
+
+        if (chatModelOpt.isEmpty()) {
+            throw new GlobalException("NO_CHAT","Такого чата не существует или у текущего пользователя нет доступа к нему");
+        }
+
+        return mockMessageModel.stream()
+                .filter(message -> !message.isOldMessage()
+                        && !Objects.equals(message.getType(), "SYSTEM")
+                        && Objects.equals(chatModelOpt.get().getUserId(), id)
+                        && Objects.equals(message.getChatId(), chatId))
+                .toList();
+    }
+
+    @Override
+    public MessageModelDTO createNewMessage(String uidFirebase, Long id, Long chatId, SaveMessageDTO newMessage) {
+        mockMessageModel.add(new MessageModelDTO(
+                (long) (mockMessageModel.size()+1),
+                newMessage.getChatId(),
+                newMessage.getModelUriId(),
+                newMessage.isOldMessage(),
+                newMessage.getRole(),
+                newMessage.getText(),
+                newMessage.getType(),
+                LocalDateTime.now()
+        ));
+        return mockMessageModel.getLast();
+    }
+
+    @Autowired
+    private MockChatRepository mockChatRepository;
+
+    // Контейнер для хранения сообщений
+    public List<MessageModelDTO> mockMessageModel;
+
+    @PostConstruct
+    private void initMockMessageModel(){
+        // Инициализируем список сообщений
+        mockMessageModel = new ArrayList<>();
+        long messageId = 1;
+
+        // Чат 1: 10 сообщений, modelUriId = 2 (YandexGPT 5 Pro)
+        for (int i = 0; i < 10; i++) {
+            String role = (i % 2 == 0) ? "USER" : "ASSISTANT";
+            Long modelId = (i % 2 == 0) ? null: 2L;
+            MessageModelDTO message = new MessageModelDTO(
+                    messageId++,
+                    1L,                  // chatId = 1
+                    modelId,                  // modelUriId = 2 (YandexGPT 5 Pro)
+                    false,               // oldMessage
+                    role,
+                    "Сообщение " + (i+1) + " для чата 1",
+                    "MESSAGE",           // type
+                    LocalDateTime.now().minusMinutes(10 - i)  // пример времени создания
+            );
+            mockMessageModel.add(message);
+        }
+
+        // Чат 2: 10 сообщений, modelUriId = 3 (ChatGPT 4o mini)
+        for (int i = 0; i < 10; i++) {
+            String role = (i % 2 == 0) ? "USER" : "ASSISTANT";
+            Long modelId = (i % 2 == 0) ? null: 3L;
+            MessageModelDTO message = new MessageModelDTO(
+                    messageId++,
+                    2L,                  // chatId = 2
+                    modelId,                  // modelUriId = 3 (ChatGPT 4o mini)
+                    false,
+                    role,
+                    "Сообщение " + (i+1) + " для чата 2",
+                    "MESSAGE",
+                    LocalDateTime.now().minusMinutes(10 - i)
+            );
+            mockMessageModel.add(message);
+        }
+
+        // Чат 3: 2 сообщения, modelUriId = 1 (DeepSeek V3)
+        for (int i = 0; i < 2; i++) {
+            String role = (i % 2 == 0) ? "USER" : "ASSISTANT";
+            Long modelId = (i % 2 == 0) ? null: 1L;
+            MessageModelDTO message = new MessageModelDTO(
+                    messageId++,
+                    3L,                  // chatId = 3
+                    modelId,                  // modelUriId = 1 (DeepSeek V3)
+                    false,
+                    role,
+                    "Сообщение " + (i+1) + " для чата 3",
+                    "MESSAGE",
+                    LocalDateTime.now().minusMinutes(2 - i)
+            );
+            mockMessageModel.add(message);
+        }
+
+        // Чат 4: 2 сообщения, modelUriId = 1 (DeepSeek V3)
+        for (int i = 0; i < 2; i++) {
+            String role = (i % 2 == 0) ? "USER" : "ASSISTANT";
+            Long modelId = (i % 2 == 0) ? null: 1L;
+            MessageModelDTO message = new MessageModelDTO(
+                    messageId++,
+                    4L,                  // chatId = 4
+                    modelId,                  // modelUriId = 1 (DeepSeek V3)
+                    false,
+                    role,
+                    "Сообщение " + (i+1) + " для чата 4",
+                    "MESSAGE",
+                    LocalDateTime.now().minusMinutes(2 - i)
+            );
+            mockMessageModel.add(message);
+        }
+    }
+}
+package com.promts.promts_test_server.repository.Message;
+
+import com.promts.promts_test_server.dto.Message.inbound.MessageModelDTO;
+import com.promts.promts_test_server.dto.Message.outbound.SaveMessageDTO;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+@Profile("model")
+public class ModelMessageRepository implements MessageRepository{
+    @Override
+    public List<MessageModelDTO> getAllChatMessagesByChatId(String uidFirebase, Long id, Long chatId) {
+        return List.of();
+    }
+
+    @Override
+    public MessageModelDTO createNewMessage(String uidFirebase, Long id, Long chatId, SaveMessageDTO newMessage) {
+        return null;
+    }
+}
+package com.promts.promts_test_server.repository.NeuralNetwork;
+
+import com.promts.promts_test_server.dto.NeuralNetwork.outbound.NeuralNetworkDTO;
+import jakarta.annotation.PostConstruct;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Repository
+@Profile("mock")
+public class MockNeuralNetworkRepository {
+
+    public List<NeuralNetworkDTO> mockNeuralNetworkDTOS = new ArrayList<>();
+
+    @PostConstruct
+    private void initMockNeuralNetworkDTOS() {
+        mockNeuralNetworkDTOS.add(new NeuralNetworkDTO(1L, "DeepSeek V3", "openrouter/deepseek-v3", "Мощная модель для генерации текста."));
+        mockNeuralNetworkDTOS.add(new NeuralNetworkDTO(2L, "YandexGPT 5 Pro", "yandex/yangexgpt-5-pro", "Самая продвинутая русская модель"));
+        mockNeuralNetworkDTOS.add(new NeuralNetworkDTO(3L, "ChatGPT 4o mini", "openrouter/chatgpt-4o-mini", "Дешевая нейросеть для повседневных задач"));
+    }
+}
+package com.promts.promts_test_server.repository.User;
+
+import com.promts.promts_test_server.dto.Chat.outbound.ChatListShortDTO;
+import com.promts.promts_test_server.dto.User.inbound.UpdateUserRequestDTO;
+import com.promts.promts_test_server.dto.User.inbound.UserInfoFromModelDTO;
+import com.promts.promts_test_server.exception.GlobalException;
+import com.promts.promts_test_server.repository.Chat.MockChatRepository;
+import com.promts.promts_test_server.repository.NeuralNetwork.MockNeuralNetworkRepository;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Repository;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@Repository
+@Profile("mock")
+public class MockUserRepository implements UserRepository{
+
+    // В моковом вместо создания просто заранее созданный пустой аккаунт. Новый аккаунт в моковом режиме создать нельзя
+    @Override
+    public UserInfoFromModelDTO createUser(String email, String uidFirebase) throws InterruptedException {
+
+        // Имитация ожидания запроса
+        Thread.sleep(1000);
+
+        try{
+
+            return mockResponseUser.getFirst();
+        } catch (RuntimeException e) {
+            throw new GlobalException("SERVICE_IS_NOT_ACTIVE", "Сервис недоступен");
+        }
+    }
+
+    // При входе получаем всегда 2 аккаунт, заполненный уже информацией
+    @Override
+    public UserInfoFromModelDTO getUser(String uidFirebase) throws InterruptedException {
+
+        // Имитация ожидания запроса
+        Thread.sleep(1000);
+
+        try{
+            return mockResponseUser.get(1);
+        } catch (RuntimeException e) {
+            throw new GlobalException("SERVICE_IS_NOT_ACTIVE", "Сервис недоступен");
+        }
+    }
+
+    // Можем обновить настройки пользователей моковых
+    @Override
+    public UserInfoFromModelDTO updateUser(Long id, String uidFirebase, UpdateUserRequestDTO updateDTO) throws InterruptedException {
+
+        // Имитация ожидания запроса
+        Thread.sleep(1000);
+
+        try{
+            UserInfoFromModelDTO userInfoFromModelDTO = mockResponseUser.get((int) (id-1));
+            if (updateDTO.getMemory() != null) {
+                userInfoFromModelDTO.getUser().setMemory(updateDTO.getMemory());
+            }
+            if (updateDTO.getStandardModelUriId() != null) {
+                userInfoFromModelDTO.getUser().setStandardModelUriId(updateDTO.getStandardModelUriId());
+            }
+            if (updateDTO.isMemoryEnabled() != userInfoFromModelDTO.getUser().isMemoryEnabled()) {
+                userInfoFromModelDTO.getUser().setMemoryEnabled(updateDTO.isMemoryEnabled());
+            }
+            if (updateDTO.isAiCanUpdateMemory() != userInfoFromModelDTO.getUser().isAiCanUpdateMemory()){
+                userInfoFromModelDTO.getUser().setAiCanUpdateMemory(updateDTO.isAiCanUpdateMemory());
+            }
+
+            return userInfoFromModelDTO;
+        } catch (RuntimeException e) {
+            throw new GlobalException("SERVICE_IS_NOT_ACTIVE", "Сервис недоступен");
+        }
+    }
+
+
+
+    @Autowired
+    private MockNeuralNetworkRepository mockNeuralNetworkService;
+    @Autowired
+    private MockChatRepository mockChatRepository;
+
+    public final List<UserInfoFromModelDTO> mockResponseUser = new ArrayList<>();
+
+    @PostConstruct
+    private void initMockResponseUser() throws InterruptedException {
+        // Моковые данные нейросетей, у всех пользователей они одинаковые
+        List<UserInfoFromModelDTO.NeuralNetwork> neuralNetworks = new ArrayList<>();
+        for (int i = 0; i < mockNeuralNetworkService.mockNeuralNetworkDTOS.size(); i++) {
+            neuralNetworks.add(new UserInfoFromModelDTO.NeuralNetwork(
+                    mockNeuralNetworkService.mockNeuralNetworkDTOS.get(i).getId(),
+                    mockNeuralNetworkService.mockNeuralNetworkDTOS.get(i).getName(),
+                    mockNeuralNetworkService.mockNeuralNetworkDTOS.get(i).getSystemName(),
+                    mockNeuralNetworkService.mockNeuralNetworkDTOS.get(i).getDesc()));
+        }
+
+        // Мок предоставляется при регистрации нового пользователя
+        mockResponseUser.add(new UserInfoFromModelDTO(
+                new UserInfoFromModelDTO.User(
+                        1L,
+                        "user@example.com",
+                        "44asds23l0332a;",
+                        "USER",
+                        1L,
+                        20.00,
+                        "",
+                        true,
+                        true,
+                        LocalDateTime.parse("2023-10-01T12:00:10")
+                ),
+                new ArrayList<>(),
+                neuralNetworks
+        ));
+
+
+        // Мок предоставляется при входе существующего пользователя, идет вместе с чатами
+        List<UserInfoFromModelDTO.ChatList> chats2 = new ArrayList<>();
+        ChatListShortDTO chatListShortDTO =  mockChatRepository.getUserChats("3233", 2L);
+        for (int i = 0; i < chatListShortDTO.getChats().size(); i++){
+            chats2.add(new UserInfoFromModelDTO.ChatList(
+                    chatListShortDTO.getChats().get(i).getId(),
+                    chatListShortDTO.getChats().get(i).getChatName(),
+                    chatListShortDTO.getChats().get(i).isStarredChat(),
+                    chatListShortDTO.getChats().get(i).getDateEdit()
+            ));
+        }
+        mockResponseUser.add(new UserInfoFromModelDTO(
+                new UserInfoFromModelDTO.User(
+                        2L,
+                        "he@he.he",
+                        "334cxlllasd33",
+                        "USER",
+                        2L,
+                        20.00,
+                        "Пользователь просит обращаться к нему мой господин",
+                        true,
+                        false,
+                        LocalDateTime.parse("2023-10-01T12:00:10")
+                ),
+                chats2,
+                neuralNetworks
+        ));
+    }
+}
+package com.promts.promts_test_server.repository.User;
+
+import com.promts.promts_test_server.dto.User.inbound.UpdateUserRequestDTO;
+import com.promts.promts_test_server.dto.User.inbound.UserInfoFromModelDTO;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Repository;
+
+@Repository
+@Profile("model")
+public class ModelUserRepository implements UserRepository{
+    @Override
+    public UserInfoFromModelDTO createUser(String email, String uidFirebase) {
+        return null;
+    }
+
+    @Override
+    public UserInfoFromModelDTO getUser(String uidFirebase) {
+        return null;
+    }
+
+    @Override
+    public UserInfoFromModelDTO updateUser(Long id, String uidFirebase, UpdateUserRequestDTO updateDTO) {
+        return null;
+    }
+}
+package com.promts.promts_test_server.repository.User;
+
+import com.promts.promts_test_server.dto.User.inbound.UpdateUserRequestDTO;
+import com.promts.promts_test_server.dto.User.inbound.UserInfoFromModelDTO;
+
+public interface UserRepository {
+    UserInfoFromModelDTO createUser(String email, String uidFirebase) throws InterruptedException;
+    UserInfoFromModelDTO getUser(String uidFirebase) throws InterruptedException;
+    UserInfoFromModelDTO updateUser(Long id, String uidFirebase, UpdateUserRequestDTO updateDTO) throws InterruptedException;
+}
+package com.promts.promts_test_server.service;
+
+import com.promts.promts_test_server.exception.GlobalException;
+import org.springframework.stereotype.Service;
+
+@Service
+public class AuthService {
+
+    // Происходит проверка токена для его актуализации
+    public String getUidFirebaseAndValidate(String authorization){
+        if (authorization.isEmpty()) {
+            throw new GlobalException("ACCOUNT_CHECK_ERROR", "Ошибка в актуальности токена");
+        }
+        return "approved";
+    }
+}
+package com.promts.promts_test_server.service;
+
+import com.promts.promts_test_server.dto.ChatBot.inbound.CreateChatBotDTO;
+import com.promts.promts_test_server.dto.ChatBot.outbound.ChatBotResponseDTO;
+import com.promts.promts_test_server.dto.ChatBot.outbound.ChatBotsResponseDTO;
+import com.promts.promts_test_server.exception.GlobalException;
+import com.promts.promts_test_server.repository.ChatBot.ChatBotRepository;
+import com.promts.promts_test_server.repository.NeuralNetwork.MockNeuralNetworkRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+
+@Service
+public class ChatBotService {
+
+    @Autowired
+    private MockNeuralNetworkRepository mockNeuralNetworkRepository;
+    @Autowired
+    private ChatBotRepository chatBotRepository;
+
+    // Метод для получения всех чат-ботов по определенным параметрам
+    public ChatBotsResponseDTO getChatBots(String search, int limit, int offset, long id, String uidFirebase) throws GlobalException{
+        try {
+            return chatBotRepository.getAllChatBotsBySpec(id, uidFirebase, search, offset, limit);
+        } catch (Exception e){
+            throw new GlobalException("SERVICE_IS_NOT_ACTIVE", "Сервис недоступен");
+        }
+    }
+
+    // Метод получения конкретного чат-бота
+    public ChatBotResponseDTO getChatBot(Long chatBotId, Long id, String uidFirebase) {
+        try {
+            return chatBotRepository.getChatBotById(id, uidFirebase, chatBotId);
+        } catch (Exception e){
+            throw new GlobalException("SERVICE_IS_NOT_ACTIVE", "Сервис недоступен");
+        }
+    }
+
+    public ChatBotResponseDTO createChatBot(CreateChatBotDTO createChatBotDTO, Long id, String uidFirebase) {
+        try {
+            return chatBotRepository.createChatBotById(id, uidFirebase, createChatBotDTO);
+        } catch (Exception e){
+            throw new GlobalException("SERVICE_IS_NOT_ACTIVE", "Сервис недоступен");
+        }
+    }
+}
+package com.promts.promts_test_server.service;
+
+import com.promts.promts_test_server.dto.Chat.inbound.CreateChatDTO;
+import com.promts.promts_test_server.dto.Chat.inbound.CreateChatWithChatBotDTO;
+import com.promts.promts_test_server.dto.Chat.inbound.UpdateChatSettingsDTO;
+import com.promts.promts_test_server.dto.Chat.outbound.ChatListShortDTO;
+import com.promts.promts_test_server.dto.Chat.outbound.CreatedChatDTO;
+import com.promts.promts_test_server.dto.Chat.outbound.UpdatedChatSettingsDTO;
+import com.promts.promts_test_server.repository.Chat.ChatRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class ChatService {
+
+    @Autowired
+    private ChatRepository chatRepository;
+
+    public CreatedChatDTO createChat(String uidFirebase, Long id, CreateChatDTO createChatDTO) throws InterruptedException {
+
+        return chatRepository.createChat(uidFirebase, id, createChatDTO);
+    }
+
+    public CreatedChatDTO createChatWithChatBot(String uidFirebase, Long id, CreateChatWithChatBotDTO createChatWithChatBotDTO) throws InterruptedException {
+
+        return chatRepository.createChatWithChatBot(uidFirebase, id, createChatWithChatBotDTO);
+    }
+
+    public ChatListShortDTO getUserChats(String uidFirebase, Long id) throws InterruptedException {
+
+        return chatRepository.getUserChats(uidFirebase, id);
+    }
+
+    public UpdatedChatSettingsDTO updateChatSettings(String uidFirebase, Long id, UpdateChatSettingsDTO updateChatSettingsDTO) throws InterruptedException {
+
+        return chatRepository.updateChatSettings(uidFirebase, id, updateChatSettingsDTO);
+    }
+}
+package com.promts.promts_test_server.service;
+
+import com.promts.promts_test_server.dto.User.inbound.UpdateUserRequestDTO;
+import com.promts.promts_test_server.dto.User.inbound.UserInfoFromModelDTO;
+import com.promts.promts_test_server.dto.User.outbound.GetUserResponseDTO;
+import com.promts.promts_test_server.dto.User.outbound.UpdateUserResponseDTO;
+import com.promts.promts_test_server.exception.GlobalException;
+import com.promts.promts_test_server.repository.User.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+public class UserService {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    // Сервис для создания пользователя, тестовый
+    public GetUserResponseDTO createUser(String email, String uidFirebase) throws RuntimeException {
+        try{
+            UserInfoFromModelDTO userModelDto = userRepository.createUser(email, uidFirebase);
+
+            List<GetUserResponseDTO.ChatList> chatLists  = new ArrayList<>();
+            for (int i = 0; i < userModelDto.getChats().size(); i++){
+                chatLists.add(new GetUserResponseDTO.ChatList(
+                        userModelDto.getChats().get(i).getId(),
+                        userModelDto.getChats().get(i).getChatName(),
+                        userModelDto.getChats().get(i).isStarredChat(),
+                        userModelDto.getChats().get(i).getDateEdit()
+                ));
+            }
+
+            List<GetUserResponseDTO.NeuralNetwork> neuralNetworks = new ArrayList<>();
+            for (int i = 0; i < userModelDto.getNeuralNetworks().size(); i++) {
+                neuralNetworks.add(new GetUserResponseDTO.NeuralNetwork(
+                        userModelDto.getNeuralNetworks().get(i).getId(),
+                        userModelDto.getNeuralNetworks().get(i).getName(),
+                        userModelDto.getNeuralNetworks().get(i).getSystemName(),
+                        userModelDto.getNeuralNetworks().get(i).getDesc()
+                ));
+            }
+            return new GetUserResponseDTO(
+                    new GetUserResponseDTO.User(
+                            userModelDto.getUser().getId(),
+                            userModelDto.getUser().getEmail(),
+                            userModelDto.getUser().getRole(),
+                            userModelDto.getUser().getMoney(),
+                            userModelDto.getUser().getMemory(),
+                            userModelDto.getUser().isMemoryEnabled(),
+                            userModelDto.getUser().isAiCanUpdateMemory(),
+                            userModelDto.getUser().getStandardModelUriId()
+                    ),
+                    chatLists,
+                    neuralNetworks
+            );
+        } catch (Exception e){
+            throw new GlobalException("SERVICE_IS_NOT_ACTIVE", "Сервис недоступен");
+        }
+    }
+
+
+    // Сервис для получения пользователя, тестовый
+    public GetUserResponseDTO getUser(String uidFirebase) throws RuntimeException {
+        try{
+            UserInfoFromModelDTO userModelDto = userRepository.getUser(uidFirebase);
+
+            List<GetUserResponseDTO.ChatList> chatLists  = new ArrayList<>();
+            for (int i = 0; i < userModelDto.getChats().size(); i++){
+                chatLists.add(new GetUserResponseDTO.ChatList(
+                        userModelDto.getChats().get(i).getId(),
+                        userModelDto.getChats().get(i).getChatName(),
+                        userModelDto.getChats().get(i).isStarredChat(),
+                        userModelDto.getChats().get(i).getDateEdit()
+                ));
+            }
+
+            List<GetUserResponseDTO.NeuralNetwork> neuralNetworks = new ArrayList<>();
+            for (int i = 0; i < userModelDto.getNeuralNetworks().size(); i++) {
+                neuralNetworks.add(new GetUserResponseDTO.NeuralNetwork(
+                        userModelDto.getNeuralNetworks().get(i).getId(),
+                        userModelDto.getNeuralNetworks().get(i).getName(),
+                        userModelDto.getNeuralNetworks().get(i).getSystemName(),
+                        userModelDto.getNeuralNetworks().get(i).getDesc()
+                ));
+            }
+            return new GetUserResponseDTO(
+                    new GetUserResponseDTO.User(
+                            userModelDto.getUser().getId(),
+                            userModelDto.getUser().getEmail(),
+                            userModelDto.getUser().getRole(),
+                            userModelDto.getUser().getMoney(),
+                            userModelDto.getUser().getMemory(),
+                            userModelDto.getUser().isMemoryEnabled(),
+                            userModelDto.getUser().isAiCanUpdateMemory(),
+                            userModelDto.getUser().getStandardModelUriId()
+                    ),
+                    chatLists,
+                    neuralNetworks
+            );
+        } catch (Exception e){
+            throw new GlobalException("SERVICE_IS_NOT_ACTIVE", "Сервис недоступен");
+        }
+    }
+
+
+    // Метод для обновления настроек пользователя
+    public UpdateUserResponseDTO updateUser(String uidFirebase,
+                                            Long userId,
+                                            UpdateUserRequestDTO requestDTO) {
+        try{
+            UserInfoFromModelDTO userModelDto = userRepository.updateUser(userId, uidFirebase, requestDTO);
+
+            // Заполняем обновленные данные
+            UpdateUserResponseDTO updateUser = new UpdateUserResponseDTO();
+            updateUser.setUpdated(true);
+            updateUser.setMemoryEnabled(userModelDto.getUser().isMemoryEnabled());
+            updateUser.setAiCanUpdateMemory(userModelDto.getUser().isAiCanUpdateMemory());
+            updateUser.setMemory(userModelDto.getUser().getMemory());
+            updateUser.setStandardModelUriId(userModelDto.getUser().getStandardModelUriId());
+
+            return updateUser;
+        } catch (Exception e){
+            throw new GlobalException("SERVICE_IS_NOT_ACTIVE", "Сервис недоступен");
+        }
+    }
+}
+package com.promts.promts_test_server.service.Message;
+
+import com.promts.promts_test_server.dto.Message.inbound.DeleteMessagesDTO;
+import com.promts.promts_test_server.dto.Message.inbound.NewMessageDTO;
+import com.promts.promts_test_server.dto.Message.inbound.RegenerateMessageDTO;
+import com.promts.promts_test_server.dto.Message.outbound.ListMessages;
+import com.promts.promts_test_server.dto.Message.outbound.MessageGenerateResponse;
+import com.promts.promts_test_server.dto.Message.outbound.SuccessDeleteMessagesDTO;
+
+public interface MessageService {
+    MessageGenerateResponse generateMessage(String uidFirebase, Long id, NewMessageDTO newMessageDTO);
+    MessageGenerateResponse regenerateMessage(String uidFirebase, Long id, RegenerateMessageDTO regenerateMessageDTO);
+    ListMessages getMessagesByChatId(String uidFirebase, Long id, Long chatId);
+    SuccessDeleteMessagesDTO deleteMessagesByMessageId(String uidFirebase, Long id, DeleteMessagesDTO deleteMessagesDTO);
+}
+package com.promts.promts_test_server.service.Message;
+
+import com.promts.promts_test_server.dto.Chat.inbound.ChatModelDTO;
+import com.promts.promts_test_server.dto.Generator.inbound.ResponseGeneratedMessageDTO;
+import com.promts.promts_test_server.dto.Generator.outbound.MessageForGenerator;
+import com.promts.promts_test_server.dto.Message.inbound.DeleteMessagesDTO;
+import com.promts.promts_test_server.dto.Message.inbound.MessageModelDTO;
+import com.promts.promts_test_server.dto.Message.inbound.NewMessageDTO;
+import com.promts.promts_test_server.dto.Message.inbound.RegenerateMessageDTO;
+import com.promts.promts_test_server.dto.Message.outbound.ListMessages;
+import com.promts.promts_test_server.dto.Message.outbound.MessageGenerateResponse;
+import com.promts.promts_test_server.dto.Message.outbound.SaveMessageDTO;
+import com.promts.promts_test_server.dto.Message.outbound.SuccessDeleteMessagesDTO;
+import com.promts.promts_test_server.dto.NeuralNetwork.outbound.NeuralNetworkDTO;
+import com.promts.promts_test_server.dto.User.inbound.UserInfoFromModelDTO;
+import com.promts.promts_test_server.exception.GlobalException;
+import com.promts.promts_test_server.repository.Chat.MockChatRepository;
+import com.promts.promts_test_server.repository.Generator.GeneratorRepository;
+import com.promts.promts_test_server.repository.Message.MessageRepository;
+import com.promts.promts_test_server.repository.Message.MockMessageRepository;
+import com.promts.promts_test_server.repository.NeuralNetwork.MockNeuralNetworkRepository;
+import com.promts.promts_test_server.repository.User.MockUserRepository;
+import com.promts.promts_test_server.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+@Service
+@Profile("mock")
+public class MockMessageService implements MessageService{
+    @Override
+    public MessageGenerateResponse generateMessage(String uidFirebase, Long id, NewMessageDTO newMessageDTO) {
+
+        Optional<NeuralNetworkDTO> neuralNetworkOpt = mockNeuralNetworkRepository.mockNeuralNetworkDTOS.stream()
+                .filter(neuro -> Objects.equals(neuro.getId(), newMessageDTO.getModelUriId()))
+                .findFirst();
+
+        Optional<ChatModelDTO> chatModelOpt = mockChatRepository.mockResponseChats.stream()
+                .filter(chat -> Objects.equals(chat.getId(), newMessageDTO.getChatId()))
+                .findFirst();
+
+        Optional<UserInfoFromModelDTO> userModelOpt = mockUserRepository.mockResponseUser.stream()
+                .filter(user -> Objects.equals(user.getUser().getId(), id))
+                .findFirst();
+
+        if (neuralNetworkOpt.isEmpty() || chatModelOpt.isEmpty() || userModelOpt.isEmpty()) {
+            throw new GlobalException("NO_EXISTED_MODEL","Не существующая модель для генерации или нет такого чата");
+        }
+
+        // Обновление работает пока только по смотря по выбранной нейросети, это моковый вариант
+        boolean updateMemory = false;
+        String memory = userModelOpt.get().getUser().getMemory();
+        if (newMessageDTO.getModelUriId()==1) {
+            memory = memory + "абвгд+: ";
+            mockUserRepository.mockResponseUser.get((int) (id - 1)).getUser().setMemory(memory);
+            updateMemory = true;
+        }
+
+        // Сохранение сообщения пользователя
+        SaveMessageDTO saveUserMessageDTO = new SaveMessageDTO(
+                chatModelOpt.get().getId(),
+                null,
+                false,
+                "USER",
+                newMessageDTO.getText(),
+                "MESSAGE"
+        );
+        messageRepository.createNewMessage(uidFirebase, id, chatModelOpt.get().getId(), saveUserMessageDTO);
+
+        List<MessageModelDTO> messages = messageRepository.getAllChatMessagesByChatId(uidFirebase, id, newMessageDTO.getChatId());
+        List<MessageForGenerator> generatorMessages = new ArrayList<>();
+        for (MessageModelDTO message : messages) {
+            generatorMessages.add(new MessageForGenerator(
+                    message.getRole(),
+                    message.getText()
+            ));
+        }
+        // Собираем все настройки в сервисе, чтобы репозиторий разбирался только с отправкой сообщения
+        String networkName = neuralNetworkOpt.get().getName();
+        double temperature = chatModelOpt.get().getTemperature();
+        String context = chatModelOpt.get().getContext();
+        // Контекст пока в корявом виде только для мока, потом будет полная реализация вместе с настройками приложения
+        context+=memory;
+        ResponseGeneratedMessageDTO responseGeneratedMessageDTO = generatorRepository.generateMessage(networkName,generatorMessages,context,temperature);
+        SaveMessageDTO saveNeuroMessageDTO = new SaveMessageDTO(
+                chatModelOpt.get().getId(),
+                newMessageDTO.getModelUriId(),
+                false,
+                "ASSISTIANT",
+                responseGeneratedMessageDTO.getMessage().getText(),
+                "MESSAGE"
+        );
+
+        MessageModelDTO messageNeuroModelDTO = messageRepository.createNewMessage(uidFirebase, id, chatModelOpt.get().getId(), saveNeuroMessageDTO);
+        mockUserRepository.mockResponseUser.get((int) (id - 1)).getUser()
+                .setMoney(mockUserRepository.mockResponseUser.get((int) (id - 1)).getUser()
+                        .getMoney()-responseGeneratedMessageDTO.getUsage().getCost());
+        return new MessageGenerateResponse(
+                new MessageGenerateResponse.MessageRequest(
+                        messageNeuroModelDTO.getId(),
+                        messageNeuroModelDTO.getText(),
+                        messageNeuroModelDTO.getDateCreate(),
+                        true
+                ),
+                new MessageGenerateResponse.User(
+                        updateMemory,
+                        memory,
+                        mockUserRepository.mockResponseUser.get((int) (id - 1)).getUser().getMoney(),
+                        responseGeneratedMessageDTO.getUsage().getCost()
+                )
+        );
+
+    }
+
+    @Override
+    public MessageGenerateResponse regenerateMessage(String uidFirebase, Long id, RegenerateMessageDTO regenerateMessageDTO) {
+        return null;
+    }
+
+    @Override
+    public ListMessages getMessagesByChatId(String uidFirebase, Long id, Long chatId) {
+
+        ListMessages listMessages = new ListMessages();
+        List<ListMessages.Message> list = new ArrayList<>();
+        List<MessageModelDTO> messages = messageRepository.getAllChatMessagesByChatId(uidFirebase, id, chatId);
+
+        for (MessageModelDTO message : messages) {
+            list.add(new ListMessages.Message(
+                    message.getId(),
+                    message.getText(),
+                    message.getRole(),
+                    message.getDateCreate()
+            ));
+        }
+
+        listMessages.setMessages(list);
+
+        return listMessages;
+    }
+
+    @Override
+    public SuccessDeleteMessagesDTO deleteMessagesByMessageId(String uidFirebase, Long id, DeleteMessagesDTO deleteMessagesDTO) {
+        return null;
+    }
+
+    @Autowired
+    private GeneratorRepository generatorRepository;
+    @Autowired
+    private MockNeuralNetworkRepository mockNeuralNetworkRepository;
+    @Autowired
+    private MockChatRepository mockChatRepository;
+    @Autowired
+    private MockUserRepository mockUserRepository;
+    @Autowired
+    private MockMessageRepository mockMessageRepository;
+    @Autowired
+    private MessageRepository messageRepository;
+
+    @Autowired
+    private UserService userService;
+
+}
+package com.promts.promts_test_server.service.Message;
+
+import com.promts.promts_test_server.dto.Message.inbound.DeleteMessagesDTO;
+import com.promts.promts_test_server.dto.Message.inbound.NewMessageDTO;
+import com.promts.promts_test_server.dto.Message.inbound.RegenerateMessageDTO;
+import com.promts.promts_test_server.dto.Message.outbound.ListMessages;
+import com.promts.promts_test_server.dto.Message.outbound.MessageGenerateResponse;
+import com.promts.promts_test_server.dto.Message.outbound.SuccessDeleteMessagesDTO;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
+
+@Service
+@Profile("model")
+public class ModelMessageService implements MessageService{
+    @Override
+    public MessageGenerateResponse generateMessage(String uidFirebase, Long id, NewMessageDTO newMessageDTO) {
+        return null;
+    }
+
+    @Override
+    public MessageGenerateResponse regenerateMessage(String uidFirebase, Long id, RegenerateMessageDTO regenerateMessageDTO) {
+        return null;
+    }
+
+    @Override
+    public ListMessages getMessagesByChatId(String uidFirebase, Long id, Long chatId) {
+        return null;
+    }
+
+    @Override
+    public SuccessDeleteMessagesDTO deleteMessagesByMessageId(String uidFirebase, Long id, DeleteMessagesDTO deleteMessagesDTO) {
+        return null;
+    }
+}
+package com.promts.promts_test_server;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class PromtsTestServerApplicationTests {
+
+	@Test
+	void contextLoads() {
+	}
+
+}
