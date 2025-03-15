@@ -6,8 +6,8 @@ import com.promts.promts_test_server.dto.Chat.inbound.CreateChatDTO;
 import com.promts.promts_test_server.dto.Chat.inbound.CreateChatWithChatBotDTO;
 import com.promts.promts_test_server.dto.Chat.inbound.UpdateChatSettingsDTO;
 import com.promts.promts_test_server.dto.Chat.outbound.ChatListShortDTO;
-import com.promts.promts_test_server.dto.Chat.outbound.CreatedChatDTO;
 import com.promts.promts_test_server.dto.Chat.outbound.UpdatedChatSettingsDTO;
+import com.promts.promts_test_server.exception.GlobalException;
 import com.promts.promts_test_server.repository.ChatBot.MockChatBotRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ public class MockChatRepository implements ChatRepository{
     private MockConfig mockConfig;
 
     @Override
-    public CreatedChatDTO createChat(String uidFirebase, Long id, CreateChatDTO createChatDTO) throws InterruptedException {
+    public ChatModelDTO createChat(String uidFirebase, Long id, CreateChatDTO createChatDTO) throws InterruptedException {
 
         // Текущая дата и время для примера
         LocalDateTime now = LocalDateTime.now();
@@ -56,27 +56,11 @@ public class MockChatRepository implements ChatRepository{
                 now
         ));
 
-        return new CreatedChatDTO(
-                (long)mockResponseChats.size(),
-                null,
-                "Чат номер " + (long)mockResponseChats.size(),
-                createChatDTO.getModelUriId(),
-                createChatDTO.getTemperature(),
-                createChatDTO.getContext(),
-                false,
-                createChatDTO.isUseMemory(),
-                createChatDTO.isUpdateMemory(),
-                true,
-                true,
-                true,
-                true,
-                now,
-                now
-        );
+        return mockResponseChats.getLast();
     }
 
     @Override
-    public CreatedChatDTO createChatWithChatBot(String uidFirebase, Long id, CreateChatWithChatBotDTO createChatWithChatBotDTO) throws InterruptedException {
+    public ChatModelDTO createChatWithChatBot(String uidFirebase, Long id, CreateChatWithChatBotDTO createChatWithChatBotDTO) throws InterruptedException {
 
 
         // Текущая дата и время для примера
@@ -104,23 +88,7 @@ public class MockChatRepository implements ChatRepository{
                 now
         ));
 
-        return new CreatedChatDTO(
-                (long)mockResponseChats.size(),
-                createChatWithChatBotDTO.getChatBotId(),
-                "Чат номер " + (long)mockResponseChats.size(),
-                createChatWithChatBotDTO.getModelUriId(),
-                createChatWithChatBotDTO.getTemperature(),
-                createChatWithChatBotDTO.getContext(),
-                false,
-                mockChatBotRepository.mockResponseChatBot.get(Math.toIntExact(createChatWithChatBotDTO.getChatBotId())-1).isCanUseMemory(),
-                mockChatBotRepository.mockResponseChatBot.get(Math.toIntExact(createChatWithChatBotDTO.getChatBotId())-1).isCanUpdateMemory(),
-                mockChatBotRepository.mockResponseChatBot.get(Math.toIntExact(createChatWithChatBotDTO.getChatBotId())-1).isCanUseMemory(),
-                mockChatBotRepository.mockResponseChatBot.get(Math.toIntExact(createChatWithChatBotDTO.getChatBotId())-1).isCanUpdateMemory(),
-                mockChatBotRepository.mockResponseChatBot.get(Math.toIntExact(createChatWithChatBotDTO.getChatBotId())-1).isCanEditModelUri(),
-                mockChatBotRepository.mockResponseChatBot.get(Math.toIntExact(createChatWithChatBotDTO.getChatBotId())-1).isCanEditContext(),
-                now,
-                now
-        );
+        return mockResponseChats.getLast();
     }
 
     @Override
@@ -148,6 +116,34 @@ public class MockChatRepository implements ChatRepository{
     }
 
     @Override
+    public List<ChatModelDTO> newGetUserChats(String uidFirebase, Long id) throws InterruptedException {
+
+        // Имитация ожидания запроса
+        Thread.sleep(mockConfig.getDelay());
+
+        return mockResponseChats.stream().filter(chat -> Objects.equals(chat.getUserId(), id)).toList();
+    }
+
+    @Override
+    public ChatModelDTO getChatByChatId(String uidFirebase, Long id, Long chatId) throws InterruptedException {
+
+        // Имитация ожидания запроса
+        Thread.sleep(mockConfig.getDelay());
+
+        try {
+            int index = Math.toIntExact(chatId - 1);
+            ChatModelDTO chat = mockResponseChats.get(index);
+            if (Objects.equals(chat.getUserId(), id)) {
+                return chat;
+            } else {
+                throw new GlobalException("NOT_ALLOWED_CHAT", "Чат не доступен пользователю");
+            }
+        } catch (IndexOutOfBoundsException e) {
+            throw new GlobalException("NOT_EXISTING_CHAT", "Чат с данным ID не существует");
+        }
+    }
+
+    @Override
     public UpdatedChatSettingsDTO updateChatSettings(String uidFirebase, Long id, UpdateChatSettingsDTO updateChatSettingsDTO) throws InterruptedException {
 
         // Имитация ожидания запроса
@@ -167,6 +163,21 @@ public class MockChatRepository implements ChatRepository{
                 updateChatSettingsDTO.isUseMemory(),
                 updateChatSettingsDTO.isUpdateMemory()
         );
+    }
+
+    @Override
+    public ChatModelDTO newUpdateChatSettings(String uidFirebase, Long id, UpdateChatSettingsDTO updateChatSettingsDTO) throws InterruptedException {
+
+        // Имитация ожидания запроса
+        Thread.sleep(mockConfig.getDelay());
+
+        mockResponseChats.get(Math.toIntExact(updateChatSettingsDTO.getChatId()-1)).setModelUriId(updateChatSettingsDTO.getModelUriId());
+        mockResponseChats.get(Math.toIntExact(updateChatSettingsDTO.getChatId()-1)).setTemperature(updateChatSettingsDTO.getTemperature());
+        mockResponseChats.get(Math.toIntExact(updateChatSettingsDTO.getChatId()-1)).setContext(updateChatSettingsDTO.getContext());
+        mockResponseChats.get(Math.toIntExact(updateChatSettingsDTO.getChatId()-1)).setUseMemory(updateChatSettingsDTO.isUseMemory());
+        mockResponseChats.get(Math.toIntExact(updateChatSettingsDTO.getChatId()-1)).setUpdateMemory(updateChatSettingsDTO.isUpdateMemory());
+
+        return mockResponseChats.get(Math.toIntExact(updateChatSettingsDTO.getChatId()-1));
     }
 
     // Контейнер для хранения моков чатов

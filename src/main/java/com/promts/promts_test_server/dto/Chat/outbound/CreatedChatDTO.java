@@ -1,5 +1,7 @@
 package com.promts.promts_test_server.dto.Chat.outbound;
 
+//TODO На удаление
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

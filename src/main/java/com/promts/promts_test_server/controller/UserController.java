@@ -103,7 +103,7 @@ public class UserController {
                                         @RequestBody UpdateUserRequestDTO requestDTO) throws InterruptedException {
 
         logger.info("Got request for edit user settings..");
-        
+
         // Сначала делаем проверку токена и получаем uid пользователя
         String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
 

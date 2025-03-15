@@ -52,7 +52,6 @@ public class ChatController {
 //        return ResponseEntity.ok().body(chatService.getUserChats(uidFirebase, id));
 //    }
 
-    //TODO Доделать
     @GetMapping("/new")
     public ResponseEntity<?> newGetUserChats (@RequestHeader String authorization,
                                               @RequestHeader Long id) throws InterruptedException{
@@ -60,10 +59,9 @@ public class ChatController {
         // Сначала делаем проверку токена и получаем uid пользователя
         String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
 
-        return null;
+        return ResponseEntity.ok().body(chatService.newGetUserChats(uidFirebase, id));
     }
 
-    //TODO Доделать
     @GetMapping("/{chatId}")
     public ResponseEntity<?> getChatByChatId(@RequestHeader String authorization,
                                              @RequestHeader Long id,
@@ -72,7 +70,7 @@ public class ChatController {
         // Сначала делаем проверку токена и получаем uid пользователя
         String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
 
-        return null;
+        return ResponseEntity.ok().body(chatService.getChatByChatId(uidFirebase, id, chatId));
     }
 
     // ЗАМЕНЕН ДРУГИМ ЭНДПОИНТОМ
@@ -86,8 +84,7 @@ public class ChatController {
 //
 //        return ResponseEntity.ok().body(chatService.updateChatSettings(uidFirebase, id, updateChatSettingsDTO));
 //    }
-
-    //TODO доделать
+    
     @PutMapping("/new")
     public ResponseEntity<?> newUpdateChatSettings(@RequestHeader String authorization,
                                                    @RequestHeader Long id,
@@ -96,7 +93,7 @@ public class ChatController {
         // Сначала делаем проверку токена и получаем uid пользователя
         String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
 
-        return null;
+        return ResponseEntity.ok().body(chatService.newUpdateChatSettings(uidFirebase, id, updateChatSettingsDTO));
     }
 
     //TODO Доделать эндпоинт потом
