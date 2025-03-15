@@ -52,11 +52,15 @@ public class UserController {
     @GetMapping("/tokencheck")
     public ResponseEntity<?> tokenCheck(@RequestHeader String authorization) throws RuntimeException{
 
+        logger.info("Checking JWTToken..");
+
         return ResponseEntity.ok().body(authService.actualiseToken(authorization));
     }
 
     @PostMapping("/reg")
     public ResponseEntity<?> regUser(@RequestBody EmailAndPasswordDTO emailAndPasswordDTO) throws RuntimeException{
+
+        logger.info("Registration new user..");
 
         return ResponseEntity.ok().body(authService.registerNewUser(emailAndPasswordDTO.getEmail(), emailAndPasswordDTO.getPassword()));
     }
@@ -64,11 +68,15 @@ public class UserController {
     @PostMapping("/log")
     public ResponseEntity<?> logUser(@RequestBody EmailAndPasswordDTO emailAndPasswordDTO) throws RuntimeException{
 
+        logger.info("Logging user..");
+
         return ResponseEntity.ok().body(authService.loginUserGetJWTToken(emailAndPasswordDTO.getEmail(), emailAndPasswordDTO.getPassword()));
     }
 
     @GetMapping
     public ResponseEntity<?> newGetUser(@RequestHeader String authorization) throws InterruptedException {
+
+        logger.info("Got request for user..");
 
         // Сначала делаем проверку токена и получаем uid пользователя
         String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
@@ -94,6 +102,8 @@ public class UserController {
                                         @RequestHeader Long id,
                                         @RequestBody UpdateUserRequestDTO requestDTO) throws InterruptedException {
 
+        logger.info("Got request for edit user settings..");
+        
         // Сначала делаем проверку токена и получаем uid пользователя
         String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
 

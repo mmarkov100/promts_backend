@@ -30,7 +30,7 @@ public class MessageController {
         return ResponseEntity.ok().body(messageService.generateMessage(uidFirebase, id, newMessageDTO));
     }
 
-    //TODO Этот эндпоинт реализую позже
+    //TODO Доделать позже
     @PostMapping("/regenerate")
     public ResponseEntity<?> regenerateMessage(@RequestHeader String authorization,
                                                 @RequestHeader Long id,
@@ -41,18 +41,29 @@ public class MessageController {
 
         return null;
     }
+    //ЭНДПОИНТ ЗАМЕНЕН
+//    @GetMapping("/{chatId}")
+//    public ResponseEntity<?> getMessagesByChatId(@RequestHeader String authorization,
+//                                                 @RequestHeader Long id,
+//                                                 @PathVariable Long chatId) throws InterruptedException {
+//
+//        // Сначала делаем проверку токена и получаем uid пользователя
+//        String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
+//
+//        return ResponseEntity.ok().body(messageService.getMessagesByChatId(uidFirebase, id, chatId));
+//    }
 
+    //TODO Доделать
     @GetMapping("/{chatId}")
-    public ResponseEntity<?> getMessagesByChatId(@RequestHeader String authorization,
-                                                 @RequestHeader Long id,
-                                                 @PathVariable Long chatId) throws InterruptedException {
+    public ResponseEntity<?> newGetMessagesByChatId(@RequestHeader String authorization,
+                                                    @RequestHeader Long id,
+                                                    @PathVariable Long chatId) throws InterruptedException {
 
         // Сначала делаем проверку токена и получаем uid пользователя
         String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
 
-        return ResponseEntity.ok().body(messageService.getMessagesByChatId(uidFirebase, id, chatId));
+        return null;
     }
-
 
     //TODO Сделать позже
     @DeleteMapping
