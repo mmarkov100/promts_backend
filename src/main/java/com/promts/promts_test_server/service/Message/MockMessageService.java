@@ -7,7 +7,6 @@ import com.promts.promts_test_server.dto.Message.inbound.DeleteMessagesDTO;
 import com.promts.promts_test_server.dto.Message.inbound.MessageModelDTO;
 import com.promts.promts_test_server.dto.Message.inbound.NewMessageDTO;
 import com.promts.promts_test_server.dto.Message.inbound.RegenerateMessageDTO;
-import com.promts.promts_test_server.dto.Message.outbound.ListMessages;
 import com.promts.promts_test_server.dto.Message.outbound.MessageGenerateResponse;
 import com.promts.promts_test_server.dto.Message.outbound.SaveMessageDTO;
 import com.promts.promts_test_server.dto.Message.outbound.SuccessDeleteMessagesDTO;
@@ -120,27 +119,6 @@ public class MockMessageService implements MessageService{
     @Override
     public MessageGenerateResponse regenerateMessage(String uidFirebase, Long id, RegenerateMessageDTO regenerateMessageDTO) {
         return null;
-    }
-
-    @Override
-    public ListMessages getMessagesByChatId(String uidFirebase, Long id, Long chatId) throws InterruptedException {
-
-        ListMessages listMessages = new ListMessages();
-        List<ListMessages.Message> list = new ArrayList<>();
-        List<MessageModelDTO> messages = messageRepository.getAllChatMessagesByChatId(uidFirebase, id, chatId);
-
-        for (MessageModelDTO message : messages) {
-            list.add(new ListMessages.Message(
-                    message.getId(),
-                    message.getText(),
-                    message.getRole(),
-                    message.getDateCreate()
-            ));
-        }
-
-        listMessages.setMessages(list);
-
-        return listMessages;
     }
 
     @Override

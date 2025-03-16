@@ -41,19 +41,7 @@ public class MessageController {
 
         return null;
     }
-    //ЭНДПОИНТ ЗАМЕНЕН
-//    @GetMapping("/{chatId}")
-//    public ResponseEntity<?> getMessagesByChatId(@RequestHeader String authorization,
-//                                                 @RequestHeader Long id,
-//                                                 @PathVariable Long chatId) throws InterruptedException {
-//
-//        // Сначала делаем проверку токена и получаем uid пользователя
-//        String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
-//
-//        return ResponseEntity.ok().body(messageService.getMessagesByChatId(uidFirebase, id, chatId));
-//    }
 
-    //TODO Доделать
     @GetMapping("/{chatId}")
     public ResponseEntity<?> newGetMessagesByChatId(@RequestHeader String authorization,
                                                     @RequestHeader Long id,

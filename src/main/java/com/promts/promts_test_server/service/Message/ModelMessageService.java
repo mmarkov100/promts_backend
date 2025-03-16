@@ -4,7 +4,6 @@ import com.promts.promts_test_server.dto.Message.inbound.DeleteMessagesDTO;
 import com.promts.promts_test_server.dto.Message.inbound.MessageModelDTO;
 import com.promts.promts_test_server.dto.Message.inbound.NewMessageDTO;
 import com.promts.promts_test_server.dto.Message.inbound.RegenerateMessageDTO;
-import com.promts.promts_test_server.dto.Message.outbound.ListMessages;
 import com.promts.promts_test_server.dto.Message.outbound.MessageGenerateResponse;
 import com.promts.promts_test_server.dto.Message.outbound.SuccessDeleteMessagesDTO;
 import org.springframework.context.annotation.Profile;
@@ -22,11 +21,6 @@ public class ModelMessageService implements MessageService{
 
     @Override
     public MessageGenerateResponse regenerateMessage(String uidFirebase, Long id, RegenerateMessageDTO regenerateMessageDTO) {
-        return null;
-    }
-
-    @Override
-    public ListMessages getMessagesByChatId(String uidFirebase, Long id, Long chatId) {
         return null;
     }
 
