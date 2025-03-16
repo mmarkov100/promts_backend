@@ -116,6 +116,7 @@ public class MockMessageService implements MessageService{
 
     }
 
+    //TODO Доделать позже
     @Override
     public MessageGenerateResponse regenerateMessage(String uidFirebase, Long id, RegenerateMessageDTO regenerateMessageDTO) {
         return null;
@@ -127,6 +128,7 @@ public class MockMessageService implements MessageService{
         return messageRepository.getAllChatMessagesByChatId(uidFirebase, id, chatId);
     }
 
+    //TODO Доделать позже
     @Override
     public SuccessDeleteMessagesDTO deleteMessagesByMessageId(String uidFirebase, Long id, DeleteMessagesDTO deleteMessagesDTO) {
 

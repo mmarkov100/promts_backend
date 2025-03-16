@@ -1,23 +1,25 @@
-package com.promts.promts_test_server.dto.User.outbound;
+package com.promts.promts_test_server.dto.User.inbound;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-public class UserDTO {
-
+@NoArgsConstructor
+public class UserModelDTO {
     private Long id;
     private String email;
+    private String uidFirebase;
     private String role;
+    private Long standardModelUriId;
     private double money;
     private String memory;
     private boolean memoryEnabled;
     private boolean aiCanUpdateMemory;
-    private Long standardModelUriId;
+    private LocalDateTime dateCreate;
 }

@@ -11,7 +11,6 @@ public class ModelAuthService implements AuthService{
 
     @Override
     public SuccessAuthDTO registerNewUser(String email, String password) {
-
         return null;
     }
 
@@ -22,7 +21,6 @@ public class ModelAuthService implements AuthService{
 
     @Override
     public SuccessLoginDTO loginUserGetJWTToken(String email, String password) {
-
         return null;
     }
 }

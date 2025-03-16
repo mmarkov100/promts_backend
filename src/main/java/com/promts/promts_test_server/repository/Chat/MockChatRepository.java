@@ -5,7 +5,6 @@ import com.promts.promts_test_server.dto.Chat.inbound.ChatModelDTO;
 import com.promts.promts_test_server.dto.Chat.inbound.CreateChatDTO;
 import com.promts.promts_test_server.dto.Chat.inbound.CreateChatWithChatBotDTO;
 import com.promts.promts_test_server.dto.Chat.inbound.UpdateChatSettingsDTO;
-import com.promts.promts_test_server.dto.Chat.outbound.ChatListShortDTO;
 import com.promts.promts_test_server.exception.GlobalException;
 import com.promts.promts_test_server.repository.ChatBot.MockChatBotRepository;
 import jakarta.annotation.PostConstruct;
@@ -88,30 +87,6 @@ public class MockChatRepository implements ChatRepository{
         ));
 
         return mockResponseChats.getLast();
-    }
-
-    @Override
-    public ChatListShortDTO getUserChats(String uidFirebase, Long id) throws InterruptedException {
-
-        // Имитация ожидания запроса
-        Thread.sleep(mockConfig.getDelay());
-
-        ChatListShortDTO responseDTO = new ChatListShortDTO();
-        List<ChatListShortDTO.ChatList> chatList = new ArrayList<>();
-
-        for (ChatModelDTO mockResponseChat : mockResponseChats) {
-            if (Objects.equals(mockResponseChat.getUserId(), id)) {
-                chatList.add(new ChatListShortDTO.ChatList(
-                        mockResponseChat.getId(),
-                        mockResponseChat.getChatName(),
-                        mockResponseChat.isStarredChat(),
-                        mockResponseChat.getDateEdit()
-                ));
-            }
-        }
-        responseDTO.setChats(chatList);
-
-        return responseDTO;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.promts.promts_test_server.service;
 
 import com.promts.promts_test_server.dto.User.inbound.UpdateUserRequestDTO;
+import com.promts.promts_test_server.dto.User.inbound.UserModelDTO;
 import com.promts.promts_test_server.dto.User.outbound.UserDTO;
 import com.promts.promts_test_server.repository.User.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,15 +13,37 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public UserDTO newGetUser(String uidFirebase) throws RuntimeException, InterruptedException {
+    public UserDTO newGetUser(String uidFirebase) throws InterruptedException {
 
-        return userRepository.newGetUser(uidFirebase);
+        UserModelDTO userModelDTO = userRepository.newGetUser(uidFirebase);
+
+        return new UserDTO(
+                userModelDTO.getId(),
+                userModelDTO.getEmail(),
+                userModelDTO.getRole(),
+                userModelDTO.getMoney(),
+                userModelDTO.getMemory(),
+                userModelDTO.isMemoryEnabled(),
+                userModelDTO.isAiCanUpdateMemory(),
+                userModelDTO.getStandardModelUriId()
+        );
     }
 
     public UserDTO newUpdateUser(String uidFirebase,
-                                 Long userId,
-                                 UpdateUserRequestDTO requestDTO) throws InterruptedException {
+                                      Long userId,
+                                      UpdateUserRequestDTO requestDTO) throws InterruptedException {
 
-        return userRepository.newUpdateUser(userId, uidFirebase, requestDTO);
+        UserModelDTO userModelDTO = userRepository.newUpdateUser(userId, uidFirebase, requestDTO);
+
+        return new UserDTO(
+                userModelDTO.getId(),
+                userModelDTO.getEmail(),
+                userModelDTO.getRole(),
+                userModelDTO.getMoney(),
+                userModelDTO.getMemory(),
+                userModelDTO.isMemoryEnabled(),
+                userModelDTO.isAiCanUpdateMemory(),
+                userModelDTO.getStandardModelUriId()
+        );
     }
 }

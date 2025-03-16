@@ -2,7 +2,6 @@ package com.promts.promts_test_server.controller;
 
 import com.promts.promts_test_server.dto.ChatBot.inbound.CreateChatBotDTO;
 import com.promts.promts_test_server.service.Auth.AuthService;
-import com.promts.promts_test_server.service.Auth.MockAuthService;
 import com.promts.promts_test_server.service.ChatBotService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

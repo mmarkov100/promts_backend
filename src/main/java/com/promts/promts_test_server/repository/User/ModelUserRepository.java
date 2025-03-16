@@ -1,8 +1,7 @@
 package com.promts.promts_test_server.repository.User;
 
 import com.promts.promts_test_server.dto.User.inbound.UpdateUserRequestDTO;
-import com.promts.promts_test_server.dto.User.inbound.UserInfoFromModelDTO;
-import com.promts.promts_test_server.dto.User.outbound.UserDTO;
+import com.promts.promts_test_server.dto.User.inbound.UserModelDTO;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
@@ -11,12 +10,12 @@ import org.springframework.stereotype.Repository;
 public class ModelUserRepository implements UserRepository{
 
     @Override
-    public UserDTO newGetUser(String uidFirebase) throws InterruptedException {
+    public UserModelDTO newGetUser(String uidFirebase) throws InterruptedException {
         return null;
     }
 
     @Override
-    public UserDTO newUpdateUser(Long id, String uidFirebase, UpdateUserRequestDTO updateDTO) throws InterruptedException {
+    public UserModelDTO newUpdateUser(Long id, String uidFirebase, UpdateUserRequestDTO updateDTO) throws InterruptedException {
         return null;
     }
 }

@@ -1,12 +1,10 @@
 package com.promts.promts_test_server.repository.User;
 
 import com.promts.promts_test_server.config.MockConfig;
-import com.promts.promts_test_server.dto.Chat.outbound.ChatListShortDTO;
 import com.promts.promts_test_server.dto.User.inbound.UpdateUserRequestDTO;
 import com.promts.promts_test_server.dto.User.inbound.UserInfoFromModelDTO;
-import com.promts.promts_test_server.dto.User.outbound.UserDTO;
+import com.promts.promts_test_server.dto.User.inbound.UserModelDTO;
 import com.promts.promts_test_server.exception.GlobalException;
-import com.promts.promts_test_server.repository.Chat.MockChatRepository;
 import com.promts.promts_test_server.repository.NeuralNetwork.MockNeuralNetworkRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +22,10 @@ public class MockUserRepository implements UserRepository{
     @Autowired
     private MockNeuralNetworkRepository mockNeuralNetworkService;
     @Autowired
-    private MockChatRepository mockChatRepository;
-    @Autowired
     private MockConfig mockConfig;
 
     @Override
-    public UserDTO newGetUser(String uidFirebase) throws InterruptedException {
+    public UserModelDTO newGetUser(String uidFirebase) throws InterruptedException {
 
         // Имитация ожидания запроса
         Thread.sleep(mockConfig.getDelay());
@@ -42,13 +38,13 @@ public class MockUserRepository implements UserRepository{
     }
 
     @Override
-    public UserDTO newUpdateUser(Long id, String uidFirebase, UpdateUserRequestDTO updateDTO) throws InterruptedException {
+    public UserModelDTO newUpdateUser(Long id, String uidFirebase, UpdateUserRequestDTO updateDTO) throws InterruptedException {
 
         // Имитация ожидания запроса
         Thread.sleep(mockConfig.getDelay());
 
         try{
-            UserDTO userDTO = mockResponseUser.get((int) (id-1));
+            UserModelDTO userDTO = mockResponseUser.get((int) (id-1));
             if (updateDTO.getMemory() != null) {
                 userDTO.setMemory(updateDTO.getMemory());
             }
@@ -70,13 +66,13 @@ public class MockUserRepository implements UserRepository{
 
     public final List<UserInfoFromModelDTO> mockResponseUserWithChatsAndNeuros = new ArrayList<>();
 
-    public final List<UserDTO> mockResponseUser = new ArrayList<>();
+    public final List<UserModelDTO> mockResponseUser = new ArrayList<>();
 
     @PostConstruct
     private void initMockResponseUser() {
 
         // Мок предоставляется при регистрации нового пользователя
-        mockResponseUser.add(new UserDTO(
+        mockResponseUser.add(new UserModelDTO(
                 1L,
                 "user@example.com",
                 "44asds23l0332a;",
@@ -89,7 +85,7 @@ public class MockUserRepository implements UserRepository{
                 LocalDateTime.parse("2023-10-01T12:00:10")
         ));
         // Мок предоставляется при входе существующего пользователя, идет вместе с чатами
-        mockResponseUser.add(new UserDTO(
+        mockResponseUser.add(new UserModelDTO(
                 2L,
                 "he@he.he",
                 "334cxlllasd33",
@@ -100,66 +96,6 @@ public class MockUserRepository implements UserRepository{
                 true,
                 false,
                 LocalDateTime.parse("2023-10-01T12:00:10")
-        ));
-    }
-
-    @PostConstruct
-    private void initMockResponseUserWithChatsAndNeuros() throws InterruptedException {
-        // Моковые данные нейросетей, у всех пользователей они одинаковые
-        List<UserInfoFromModelDTO.NeuralNetwork> neuralNetworks = new ArrayList<>();
-        for (int i = 0; i < mockNeuralNetworkService.mockNeuralNetworkDTOS.size(); i++) {
-            neuralNetworks.add(new UserInfoFromModelDTO.NeuralNetwork(
-                    mockNeuralNetworkService.mockNeuralNetworkDTOS.get(i).getId(),
-                    mockNeuralNetworkService.mockNeuralNetworkDTOS.get(i).getName(),
-                    mockNeuralNetworkService.mockNeuralNetworkDTOS.get(i).getSystemName(),
-                    mockNeuralNetworkService.mockNeuralNetworkDTOS.get(i).getDesc()));
-        }
-
-        // Мок предоставляется при регистрации нового пользователя
-        mockResponseUserWithChatsAndNeuros.add(new UserInfoFromModelDTO(
-                new UserInfoFromModelDTO.User(
-                        1L,
-                        "user@example.com",
-                        "44asds23l0332a;",
-                        "USER",
-                        1L,
-                        20.00,
-                        "",
-                        true,
-                        true,
-                        LocalDateTime.parse("2023-10-01T12:00:10")
-                ),
-                new ArrayList<>(),
-                neuralNetworks
-        ));
-
-
-        // Мок предоставляется при входе существующего пользователя, идет вместе с чатами
-        List<UserInfoFromModelDTO.ChatList> chats2 = new ArrayList<>();
-        ChatListShortDTO chatListShortDTO =  mockChatRepository.getUserChats("3233", 2L);
-        for (int i = 0; i < chatListShortDTO.getChats().size(); i++){
-            chats2.add(new UserInfoFromModelDTO.ChatList(
-                    chatListShortDTO.getChats().get(i).getId(),
-                    chatListShortDTO.getChats().get(i).getChatName(),
-                    chatListShortDTO.getChats().get(i).isStarredChat(),
-                    chatListShortDTO.getChats().get(i).getDateEdit()
-            ));
-        }
-        mockResponseUserWithChatsAndNeuros.add(new UserInfoFromModelDTO(
-                new UserInfoFromModelDTO.User(
-                        2L,
-                        "he@he.he",
-                        "334cxlllasd33",
-                        "USER",
-                        2L,
-                        20.00,
-                        "Пользователь просит обращаться к нему мой господин",
-                        true,
-                        false,
-                        LocalDateTime.parse("2023-10-01T12:00:10")
-                ),
-                chats2,
-                neuralNetworks
         ));
     }
 }

@@ -19,7 +19,7 @@ public class ChatBotService {
     private ChatBotRepository chatBotRepository;
 
     // Метод для получения всех чат-ботов по определенным параметрам
-    public ChatBotsResponseDTO getChatBots(String search, int limit, int offset, long id, String uidFirebase) throws GlobalException{
+    public ChatBotsResponseDTO getChatBots(String search, int limit, int offset, long id, String uidFirebase) {
         try {
             return chatBotRepository.getAllChatBotsBySpec(id, uidFirebase, search, offset, limit);
         } catch (Exception e){
