@@ -23,31 +23,6 @@ public class UserController {
     @Autowired
     private AuthService authService;
 
-    // Эндпоинт регистрации нового пользователя. ПОКА ЧТО ВЫВЕДЕН ИЗ СТРОЯ, ЕМУ БУДЕТ ЗАМЕНА
-    //@PostMapping("/registration")
-//    public ResponseEntity<?> newUser(@RequestHeader String authorization,
-//                                     @RequestBody RegistrationDTO registrationDTO) throws RuntimeException {
-//
-//        // Сначала делаем проверку токена и получаем uid пользователя
-//        String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
-//
-//        // Отправляем логику в сервис
-//        return ResponseEntity.ok().body(userService.createUser(registrationDTO.getEmail(), uidFirebase));
-//    }
-
-    // Эндпоинт входа пользователя и получения информации о нем, его чатах и существующих нейросетях. ПОКА ЧТО ВЫВЕДЕН ИЗ СТРОЯ, ЕМУ БУДЕТ ЗАМЕНА
-    //@GetMapping("/login")
-//    public ResponseEntity<?> getUser(@RequestHeader String authorization) throws RuntimeException {
-//
-//        logger.info(authorization);
-//
-//        // Сначала делаем проверку токена и получаем uid пользователя
-//        String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
-//
-//        // Отправляем логику в сервис
-//        return ResponseEntity.ok().body(userService.getUser(uidFirebase));
-//    }
-
     // Проверка актуальности токена. Нужен, чтобы при заходе на сайт если токен актуальный сразу переключалось на главный экран
     @GetMapping("/tokencheck")
     public ResponseEntity<?> tokenCheck(@RequestHeader String authorization) throws RuntimeException{
@@ -83,19 +58,6 @@ public class UserController {
 
         return ResponseEntity.ok().body(userService.newGetUser(uidFirebase));
     }
-
-    // Эндпоинт обновления настроек пользователя. ПОКА ЧТО ВЫВЕДЕН ИЗ СТРОЯ, ЕМУ БУДЕТ ЗАМЕНА
-//    @PutMapping()
-//    public ResponseEntity<?> updateUser(@RequestHeader String authorization,
-//                                        @RequestHeader Long id,
-//                                        @RequestBody UpdateUserRequestDTO requestDTO) throws RuntimeException {
-//
-//        // Сначала делаем проверку токена и получаем uid пользователя
-//        String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
-//
-//        // Отправляем логику в сервис
-//        return ResponseEntity.ok().body(userService.updateUser(uidFirebase, id, requestDTO));
-//    }
 
     @PutMapping("/settings")
     public ResponseEntity<?> newUpdateUser(@RequestHeader String authorization,

@@ -5,7 +5,6 @@ import com.promts.promts_test_server.dto.Chat.inbound.CreateChatDTO;
 import com.promts.promts_test_server.dto.Chat.inbound.CreateChatWithChatBotDTO;
 import com.promts.promts_test_server.dto.Chat.inbound.UpdateChatSettingsDTO;
 import com.promts.promts_test_server.dto.Chat.outbound.ChatListShortDTO;
-import com.promts.promts_test_server.dto.Chat.outbound.UpdatedChatSettingsDTO;
 
 import java.util.List;
 
@@ -15,6 +14,5 @@ public interface ChatRepository {
     ChatListShortDTO getUserChats(String uidFirebase, Long id) throws InterruptedException;
     List<ChatModelDTO> newGetUserChats(String uidFirebase, Long id)  throws InterruptedException;
     ChatModelDTO getChatByChatId (String uidFirebase, Long id, Long chatId) throws InterruptedException;
-    UpdatedChatSettingsDTO updateChatSettings(String uidFirebase, Long id, UpdateChatSettingsDTO updateChatSettingsDTO) throws InterruptedException;
     ChatModelDTO newUpdateChatSettings(String uidFirebase, Long id, UpdateChatSettingsDTO updateChatSettingsDTO) throws InterruptedException;
 }

@@ -9,23 +9,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 @Profile("model")
 public class ModelUserRepository implements UserRepository{
-    @Override
-    public UserInfoFromModelDTO createUser(String email, String uidFirebase) {
-        return null;
-    }
-
-    @Override
-    public UserInfoFromModelDTO getUser(String uidFirebase) {
-        return null;
-    }
 
     @Override
     public UserDTO newGetUser(String uidFirebase) throws InterruptedException {
-        return null;
-    }
-
-    @Override
-    public UserInfoFromModelDTO updateUser(Long id, String uidFirebase, UpdateUserRequestDTO updateDTO) {
         return null;
     }
 

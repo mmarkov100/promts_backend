@@ -5,7 +5,6 @@ import com.promts.promts_test_server.dto.Chat.inbound.CreateChatDTO;
 import com.promts.promts_test_server.dto.Chat.inbound.CreateChatWithChatBotDTO;
 import com.promts.promts_test_server.dto.Chat.inbound.UpdateChatSettingsDTO;
 import com.promts.promts_test_server.dto.Chat.outbound.ChatListShortDTO;
-import com.promts.promts_test_server.dto.Chat.outbound.UpdatedChatSettingsDTO;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
@@ -40,7 +39,7 @@ public class ModelChatRepository implements ChatRepository{
     }
 
     @Override
-    public UpdatedChatSettingsDTO updateChatSettings(String uidFirebase, Long id, UpdateChatSettingsDTO updateChatSettingsDTO) throws InterruptedException {
+    public ChatModelDTO newUpdateChatSettings(String uidFirebase, Long id, UpdateChatSettingsDTO updateChatSettingsDTO) throws InterruptedException {
         return null;
     }
 }

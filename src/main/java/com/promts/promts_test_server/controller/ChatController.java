@@ -41,17 +41,6 @@ public class ChatController {
         return ResponseEntity.ok().body(chatService.createChatWithChatBot(uidFirebase, id, createChatDTO));
     }
 
-    // ЗАМЕНЕН ДРУГИМ ЭНДПОИНТОМ
-//    @GetMapping
-//    public ResponseEntity<?> getUserChats (@RequestHeader String authorization,
-//                                           @RequestHeader Long id) throws InterruptedException {
-//
-//        // Сначала делаем проверку токена и получаем uid пользователя
-//        String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
-//
-//        return ResponseEntity.ok().body(chatService.getUserChats(uidFirebase, id));
-//    }
-
     @GetMapping("/new")
     public ResponseEntity<?> newGetUserChats (@RequestHeader String authorization,
                                               @RequestHeader Long id) throws InterruptedException{
@@ -73,18 +62,6 @@ public class ChatController {
         return ResponseEntity.ok().body(chatService.getChatByChatId(uidFirebase, id, chatId));
     }
 
-    // ЗАМЕНЕН ДРУГИМ ЭНДПОИНТОМ
-//    @PutMapping
-//    public ResponseEntity<?> updateChatSettings(@RequestHeader String authorization,
-//                                                @RequestHeader Long id,
-//                                                @RequestBody UpdateChatSettingsDTO updateChatSettingsDTO) throws InterruptedException {
-//
-//        // Сначала делаем проверку токена и получаем uid пользователя
-//        String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
-//
-//        return ResponseEntity.ok().body(chatService.updateChatSettings(uidFirebase, id, updateChatSettingsDTO));
-//    }
-    
     @PutMapping("/new")
     public ResponseEntity<?> newUpdateChatSettings(@RequestHeader String authorization,
                                                    @RequestHeader Long id,

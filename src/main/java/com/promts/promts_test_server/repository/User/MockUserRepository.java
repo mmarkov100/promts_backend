@@ -28,35 +28,6 @@ public class MockUserRepository implements UserRepository{
     @Autowired
     private MockConfig mockConfig;
 
-    // В моковом вместо создания просто заранее созданный пустой аккаунт. Новый аккаунт в моковом режиме создать нельзя
-    @Override
-    public UserInfoFromModelDTO createUser(String email, String uidFirebase) throws InterruptedException {
-
-        // Имитация ожидания запроса
-        Thread.sleep(mockConfig.getDelay());
-
-        try{
-
-            return mockResponseUserWithChatsAndNeuros.getFirst();
-        } catch (RuntimeException e) {
-            throw new GlobalException("SERVICE_IS_NOT_ACTIVE", "Сервис недоступен");
-        }
-    }
-
-    // При входе получаем всегда 2 аккаунт, заполненный уже информацией
-    @Override
-    public UserInfoFromModelDTO getUser(String uidFirebase) throws InterruptedException {
-
-        // Имитация ожидания запроса
-        Thread.sleep(mockConfig.getDelay());
-
-        try{
-            return mockResponseUserWithChatsAndNeuros.get(1);
-        } catch (RuntimeException e) {
-            throw new GlobalException("SERVICE_IS_NOT_ACTIVE", "Сервис недоступен");
-        }
-    }
-
     @Override
     public UserDTO newGetUser(String uidFirebase) throws InterruptedException {
 
@@ -65,34 +36,6 @@ public class MockUserRepository implements UserRepository{
 
         try{
             return mockResponseUser.get(1);
-        } catch (RuntimeException e) {
-            throw new GlobalException("SERVICE_IS_NOT_ACTIVE", "Сервис недоступен");
-        }
-    }
-
-    // Можем обновить настройки пользователей моковых
-    @Override
-    public UserInfoFromModelDTO updateUser(Long id, String uidFirebase, UpdateUserRequestDTO updateDTO) throws InterruptedException {
-
-        // Имитация ожидания запроса
-        Thread.sleep(mockConfig.getDelay());
-
-        try{
-            UserInfoFromModelDTO userInfoFromModelDTO = mockResponseUserWithChatsAndNeuros.get((int) (id-1));
-            if (updateDTO.getMemory() != null) {
-                userInfoFromModelDTO.getUser().setMemory(updateDTO.getMemory());
-            }
-            if (updateDTO.getStandardModelUriId() != null) {
-                userInfoFromModelDTO.getUser().setStandardModelUriId(updateDTO.getStandardModelUriId());
-            }
-            if (updateDTO.isMemoryEnabled() != userInfoFromModelDTO.getUser().isMemoryEnabled()) {
-                userInfoFromModelDTO.getUser().setMemoryEnabled(updateDTO.isMemoryEnabled());
-            }
-            if (updateDTO.isAiCanUpdateMemory() != userInfoFromModelDTO.getUser().isAiCanUpdateMemory()){
-                userInfoFromModelDTO.getUser().setAiCanUpdateMemory(updateDTO.isAiCanUpdateMemory());
-            }
-
-            return userInfoFromModelDTO;
         } catch (RuntimeException e) {
             throw new GlobalException("SERVICE_IS_NOT_ACTIVE", "Сервис недоступен");
         }

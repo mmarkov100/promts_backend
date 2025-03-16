@@ -1,6 +1,7 @@
 package com.promts.promts_test_server.service.Message;
 
 import com.promts.promts_test_server.dto.Message.inbound.DeleteMessagesDTO;
+import com.promts.promts_test_server.dto.Message.inbound.MessageModelDTO;
 import com.promts.promts_test_server.dto.Message.inbound.NewMessageDTO;
 import com.promts.promts_test_server.dto.Message.inbound.RegenerateMessageDTO;
 import com.promts.promts_test_server.dto.Message.outbound.ListMessages;
@@ -8,6 +9,8 @@ import com.promts.promts_test_server.dto.Message.outbound.MessageGenerateRespons
 import com.promts.promts_test_server.dto.Message.outbound.SuccessDeleteMessagesDTO;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @Profile("model")
@@ -25,6 +28,12 @@ public class ModelMessageService implements MessageService{
     @Override
     public ListMessages getMessagesByChatId(String uidFirebase, Long id, Long chatId) {
         return null;
+    }
+
+    @Override
+    public List<MessageModelDTO> newGetMessagesByChatId(String uidFirebase, Long id, Long chatId) throws InterruptedException {
+
+        return List.of();
     }
 
     @Override

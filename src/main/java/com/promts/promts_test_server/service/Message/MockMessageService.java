@@ -144,7 +144,14 @@ public class MockMessageService implements MessageService{
     }
 
     @Override
+    public List<MessageModelDTO> newGetMessagesByChatId(String uidFirebase, Long id, Long chatId) throws InterruptedException {
+
+        return messageRepository.getAllChatMessagesByChatId(uidFirebase, id, chatId);
+    }
+
+    @Override
     public SuccessDeleteMessagesDTO deleteMessagesByMessageId(String uidFirebase, Long id, DeleteMessagesDTO deleteMessagesDTO) {
+
         return null;
     }
 

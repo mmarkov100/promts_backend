@@ -6,7 +6,6 @@ import com.promts.promts_test_server.dto.Chat.inbound.CreateChatDTO;
 import com.promts.promts_test_server.dto.Chat.inbound.CreateChatWithChatBotDTO;
 import com.promts.promts_test_server.dto.Chat.inbound.UpdateChatSettingsDTO;
 import com.promts.promts_test_server.dto.Chat.outbound.ChatListShortDTO;
-import com.promts.promts_test_server.dto.Chat.outbound.UpdatedChatSettingsDTO;
 import com.promts.promts_test_server.exception.GlobalException;
 import com.promts.promts_test_server.repository.ChatBot.MockChatBotRepository;
 import jakarta.annotation.PostConstruct;
@@ -141,28 +140,6 @@ public class MockChatRepository implements ChatRepository{
         } catch (IndexOutOfBoundsException e) {
             throw new GlobalException("NOT_EXISTING_CHAT", "Чат с данным ID не существует");
         }
-    }
-
-    @Override
-    public UpdatedChatSettingsDTO updateChatSettings(String uidFirebase, Long id, UpdateChatSettingsDTO updateChatSettingsDTO) throws InterruptedException {
-
-        // Имитация ожидания запроса
-        Thread.sleep(mockConfig.getDelay());
-
-        mockResponseChats.get(Math.toIntExact(updateChatSettingsDTO.getChatId()-1)).setModelUriId(updateChatSettingsDTO.getModelUriId());
-        mockResponseChats.get(Math.toIntExact(updateChatSettingsDTO.getChatId()-1)).setTemperature(updateChatSettingsDTO.getTemperature());
-        mockResponseChats.get(Math.toIntExact(updateChatSettingsDTO.getChatId()-1)).setContext(updateChatSettingsDTO.getContext());
-        mockResponseChats.get(Math.toIntExact(updateChatSettingsDTO.getChatId()-1)).setUseMemory(updateChatSettingsDTO.isUseMemory());
-        mockResponseChats.get(Math.toIntExact(updateChatSettingsDTO.getChatId()-1)).setUpdateMemory(updateChatSettingsDTO.isUpdateMemory());
-
-        return new UpdatedChatSettingsDTO(
-                updateChatSettingsDTO.getChatId(),
-                updateChatSettingsDTO.getModelUriId(),
-                updateChatSettingsDTO.getTemperature(),
-                updateChatSettingsDTO.getContext(),
-                updateChatSettingsDTO.isUseMemory(),
-                updateChatSettingsDTO.isUpdateMemory()
-        );
     }
 
     @Override
