@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @Profile("mock")
 public class MockAuthService implements AuthService{
 
-    private final String mockJWTToken = "1234jwt";
+    private final String mockJWTToken = "Bearer 1234jwt";
 
     // Происходит проверка токена для его актуализации
     @Override
@@ -20,6 +20,8 @@ public class MockAuthService implements AuthService{
         } else if (!authorization.equals(mockJWTToken)) {
             throw new GlobalException("TOKEN_ACTUALISE_ERROR", "Токен авторизации недействителен");
         }
+
+        // Выдает uidFirebase пользователя, но мокова пока что только это слово
         return "approved";
     }
 
@@ -43,6 +45,8 @@ public class MockAuthService implements AuthService{
 
     @Override
     public SuccessLoginDTO loginUserGetJWTToken(String email, String password) {
+
+        // Тут происходит проверка логина и пароля, моково пока что просто проверка на пустоту
         if (email.isEmpty() || password.isEmpty()){
             throw new GlobalException("LOGIN_ERROR", "Отсутствует логин или пароль");
         }

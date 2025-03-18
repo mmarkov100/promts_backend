@@ -13,7 +13,6 @@ import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/user")
-@CrossOrigin(origins = "*")
 public class UserController {
 
     private static final Logger logger = Logger.getLogger(UserController.class.getName());
@@ -24,10 +23,11 @@ public class UserController {
     private AuthService authService;
 
     // Проверка актуальности токена. Нужен, чтобы при заходе на сайт если токен актуальный сразу переключалось на главный экран
-    @GetMapping("/tokencheck")
+    //TODO Обратно поменять на гет запрос, а то нгрок хуета какая-то
+    @PostMapping("/tokencheck")
     public ResponseEntity<?> tokenCheck(@RequestHeader String authorization) throws RuntimeException{
 
-        logger.info("Checking JWTToken..");
+        logger.info("Checking JWTToken.." + authorization);
 
         return ResponseEntity.ok().body(authService.actualiseToken(authorization));
     }
@@ -48,8 +48,9 @@ public class UserController {
         return ResponseEntity.ok().body(authService.loginUserGetJWTToken(emailAndPasswordDTO.getEmail(), emailAndPasswordDTO.getPassword()));
     }
 
-    @GetMapping
-    public ResponseEntity<?> newGetUser(@RequestHeader String authorization) throws InterruptedException {
+    //TODO Обратно поменять на гет запрос, а то нгрок хуета какая-то
+    @PostMapping
+    public ResponseEntity<?> getUser(@RequestHeader String authorization) throws InterruptedException {
 
         logger.info("Got request for user..");
 
@@ -60,7 +61,7 @@ public class UserController {
     }
 
     @PutMapping("/settings")
-    public ResponseEntity<?> newUpdateUser(@RequestHeader String authorization,
+    public ResponseEntity<?> updateUser(@RequestHeader String authorization,
                                         @RequestHeader Long id,
                                         @RequestBody UpdateUserRequestDTO requestDTO) throws InterruptedException {
 
