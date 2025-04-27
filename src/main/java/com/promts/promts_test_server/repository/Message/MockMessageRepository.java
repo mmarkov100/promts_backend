@@ -27,7 +27,7 @@ public class MockMessageRepository implements MessageRepository{
     private MockConfig mockConfig;
 
     @Override
-    public List<MessageModelDTO> getAllChatMessagesByChatId(String uidFirebase, Long id, Long chatId) throws InterruptedException {
+    public List<MessageModelDTO> getAllChatMessagesByChatId(String uidFirebase, Long chatId) throws InterruptedException {
 
         // Имитация ожидания запроса
         Thread.sleep(mockConfig.getDelay());
@@ -43,13 +43,13 @@ public class MockMessageRepository implements MessageRepository{
         return mockMessageModel.stream()
                 .filter(message -> !message.isOldMessage()
                         && !Objects.equals(message.getType(), "SYSTEM")
-                        && Objects.equals(chatModelOpt.get().getUserId(), id)
+                        && Objects.equals(chatModelOpt.get().getUserId(), 1)
                         && Objects.equals(message.getChatId(), chatId))
                 .toList();
     }
 
     @Override
-    public MessageModelDTO createNewMessage(String uidFirebase, Long id, Long chatId, SaveMessageDTO newMessage) throws InterruptedException {
+    public MessageModelDTO createNewMessage(String uidFirebase, Long chatId, SaveMessageDTO newMessage) throws InterruptedException {
 
         // Имитация ожидания запроса
         Thread.sleep(mockConfig.getDelay());

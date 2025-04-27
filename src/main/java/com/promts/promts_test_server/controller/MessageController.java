@@ -20,19 +20,17 @@ public class MessageController {
 
     @PostMapping
     public ResponseEntity<?> generateNewMessage(@RequestHeader String authorization,
-                                                @RequestHeader Long id,
                                                 @RequestBody NewMessageDTO newMessageDTO) throws InterruptedException {
 
         // Сначала делаем проверку токена и получаем uid пользователя
         String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
 
-        return ResponseEntity.ok().body(messageService.generateMessage(uidFirebase, id, newMessageDTO));
+        return ResponseEntity.ok().body(messageService.generateMessage(uidFirebase, newMessageDTO));
     }
 
     //TODO Доделать позже
     @PostMapping("/regenerate")
     public ResponseEntity<?> regenerateMessage(@RequestHeader String authorization,
-                                                @RequestHeader Long id,
                                                 @RequestBody RegenerateMessageDTO regenerateMessageDTO){
 
         // Сначала делаем проверку токена и получаем uid пользователя
@@ -43,19 +41,17 @@ public class MessageController {
 
     @GetMapping("/{chatId}")
     public ResponseEntity<?> newGetMessagesByChatId(@RequestHeader String authorization,
-                                                    @RequestHeader Long id,
                                                     @PathVariable Long chatId) throws InterruptedException {
 
         // Сначала делаем проверку токена и получаем uid пользователя
         String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
 
-        return ResponseEntity.ok().body(messageService.newGetMessagesByChatId(uidFirebase, id, chatId));
+        return ResponseEntity.ok().body(messageService.newGetMessagesByChatId(uidFirebase, chatId));
     }
 
     //TODO Сделать позже
     @DeleteMapping
     public ResponseEntity<?> deleteMessagesByMessageId(@RequestHeader String authorization,
-                                                       @RequestHeader Long id,
                                                        @RequestBody DeleteMessagesDTO deleteMessagesDTO) {
 
         // Сначала делаем проверку токена и получаем uid пользователя

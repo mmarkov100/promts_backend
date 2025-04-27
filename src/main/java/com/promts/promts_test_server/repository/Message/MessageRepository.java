@@ -11,6 +11,6 @@ import com.promts.promts_test_server.dto.Message.outbound.SaveMessageDTO;
 import java.util.List;
 
 public interface MessageRepository {
-    List<MessageModelDTO> getAllChatMessagesByChatId (String uidFirebase, Long id, Long chatId) throws InterruptedException;
-    MessageModelDTO createNewMessage(String uidFirebase, Long id, Long chatId, SaveMessageDTO newMessage) throws InterruptedException;
+    List<MessageModelDTO> getAllChatMessagesByChatId (String uidFirebase, Long chatId) throws InterruptedException;
+    MessageModelDTO createNewMessage(String uidFirebase, Long chatId, SaveMessageDTO newMessage) throws InterruptedException;
 }

@@ -13,27 +13,27 @@ import java.util.List;
 @Profile("main")
 public class ModelChatRepository implements ChatRepository{
     @Override
-    public ChatModelDTO createChat(String uidFirebase, Long id, CreateChatDTO createChatDTO) {
+    public ChatModelDTO createChat(String uidFirebase, CreateChatDTO createChatDTO) {
         return null;
     }
 
     @Override
-    public ChatModelDTO createChatWithChatBot(String uidFirebase, Long id, CreateChatWithChatBotDTO createChatWithChatBotDTO) {
+    public ChatModelDTO createChatWithChatBot(String uidFirebase, CreateChatWithChatBotDTO createChatWithChatBotDTO) {
         return null;
     }
 
     @Override
-    public List<ChatModelDTO> newGetUserChats(String uidFirebase, Long id) throws InterruptedException {
+    public List<ChatModelDTO> newGetUserChats(String uidFirebase) throws InterruptedException {
         return List.of();
     }
 
     @Override
-    public ChatModelDTO getChatByChatId(String uidFirebase, Long id, Long chatId) throws InterruptedException {
+    public ChatModelDTO getChatByChatId(String uidFirebase, Long chatId) throws InterruptedException {
         return null;
     }
 
     @Override
-    public ChatModelDTO newUpdateChatSettings(String uidFirebase, Long id, UpdateChatSettingsDTO updateChatSettingsDTO) throws InterruptedException {
+    public ChatModelDTO newUpdateChatSettings(String uidFirebase, UpdateChatSettingsDTO updateChatSettingsDTO) throws InterruptedException {
         return null;
     }
 }

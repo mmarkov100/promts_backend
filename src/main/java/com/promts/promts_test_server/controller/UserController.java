@@ -35,7 +35,6 @@ public class UserController {
 
     @PutMapping("/settings")
     public ResponseEntity<?> updateUser(@RequestHeader String authorization,
-                                        @RequestHeader Long id,
                                         @RequestBody UpdateUserRequestDTO requestDTO) throws InterruptedException {
 
         logger.info("Got request for edit user settings..");
@@ -44,6 +43,6 @@ public class UserController {
         String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
 
         // Отправляем логику в сервис
-        return ResponseEntity.ok().body(userService.newUpdateUser(uidFirebase, id, requestDTO));
+        return ResponseEntity.ok().body(userService.newUpdateUser(uidFirebase, requestDTO));
     }
 }

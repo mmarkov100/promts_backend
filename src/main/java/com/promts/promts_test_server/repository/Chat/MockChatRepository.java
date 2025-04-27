@@ -27,7 +27,7 @@ public class MockChatRepository implements ChatRepository{
     private MockConfig mockConfig;
 
     @Override
-    public ChatModelDTO createChat(String uidFirebase, Long id, CreateChatDTO createChatDTO) throws InterruptedException {
+    public ChatModelDTO createChat(String uidFirebase, CreateChatDTO createChatDTO) throws InterruptedException {
 
         // Текущая дата и время для примера
         LocalDateTime now = LocalDateTime.now();
@@ -37,7 +37,7 @@ public class MockChatRepository implements ChatRepository{
 
         mockResponseChats.add(new ChatModelDTO(
                 (long)mockResponseChats.size()+1,
-                id,
+                0L,
                 null,
                 "Чат номер " + (long)mockResponseChats.size()+1,
                 createChatDTO.getModelUriId(),
@@ -58,7 +58,7 @@ public class MockChatRepository implements ChatRepository{
     }
 
     @Override
-    public ChatModelDTO createChatWithChatBot(String uidFirebase, Long id, CreateChatWithChatBotDTO createChatWithChatBotDTO) throws InterruptedException {
+    public ChatModelDTO createChatWithChatBot(String uidFirebase, CreateChatWithChatBotDTO createChatWithChatBotDTO) throws InterruptedException {
 
 
         // Текущая дата и время для примера
@@ -69,7 +69,7 @@ public class MockChatRepository implements ChatRepository{
 
         mockResponseChats.add(new ChatModelDTO(
                 (long)mockResponseChats.size()+1,
-                id,
+                0L,
                 createChatWithChatBotDTO.getChatBotId(),
                 "Чат номер " + (long)mockResponseChats.size()+1,
                 createChatWithChatBotDTO.getModelUriId(),
@@ -90,16 +90,16 @@ public class MockChatRepository implements ChatRepository{
     }
 
     @Override
-    public List<ChatModelDTO> newGetUserChats(String uidFirebase, Long id) throws InterruptedException {
+    public List<ChatModelDTO> newGetUserChats(String uidFirebase) throws InterruptedException {
 
         // Имитация ожидания запроса
         Thread.sleep(mockConfig.getDelay());
 
-        return mockResponseChats.stream().filter(chat -> Objects.equals(chat.getUserId(), id)).toList();
+        return mockResponseChats.stream().filter(chat -> Objects.equals(chat.getUserId(), 0L)).toList();
     }
 
     @Override
-    public ChatModelDTO getChatByChatId(String uidFirebase, Long id, Long chatId) throws InterruptedException {
+    public ChatModelDTO getChatByChatId(String uidFirebase, Long chatId) throws InterruptedException {
 
         // Имитация ожидания запроса
         Thread.sleep(mockConfig.getDelay());
@@ -107,7 +107,7 @@ public class MockChatRepository implements ChatRepository{
         try {
             int index = Math.toIntExact(chatId - 1);
             ChatModelDTO chat = mockResponseChats.get(index);
-            if (Objects.equals(chat.getUserId(), id)) {
+            if (Objects.equals(chat.getUserId(), 0L)) {
                 return chat;
             } else {
                 throw new GlobalException("NOT_ALLOWED_CHAT", "Чат не доступен пользователю");
@@ -118,7 +118,7 @@ public class MockChatRepository implements ChatRepository{
     }
 
     @Override
-    public ChatModelDTO newUpdateChatSettings(String uidFirebase, Long id, UpdateChatSettingsDTO updateChatSettingsDTO) throws InterruptedException {
+    public ChatModelDTO newUpdateChatSettings(String uidFirebase, UpdateChatSettingsDTO updateChatSettingsDTO) throws InterruptedException {
 
         // Имитация ожидания запроса
         Thread.sleep(mockConfig.getDelay());

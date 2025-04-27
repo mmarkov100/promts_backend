@@ -21,14 +21,13 @@ public class NeuralNetworkController {
 
     //TODO Обратно поменять на гет запрос, а то нгрок хуета какая-то
     @PostMapping
-    public ResponseEntity<?> getAllNeuros(@RequestHeader String authorization,
-                                          @RequestHeader Long id){
+    public ResponseEntity<?> getAllNeuros(@RequestHeader String authorization){
 
-        logger.info("Got request for list of neuros..");
+        logger.info("Got request for list of neuros.. + JWT: " + authorization);
 
         // Сначала делаем проверку токена и получаем uid пользователя
         String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
 
-        return ResponseEntity.ok().body(neuralNetworkService.getAllNeuros(id, uidFirebase));
+        return ResponseEntity.ok().body(neuralNetworkService.getAllNeuros(uidFirebase));
     }
 }

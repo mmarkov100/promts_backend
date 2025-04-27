@@ -8,9 +8,9 @@ import com.promts.promts_test_server.dto.Chat.inbound.UpdateChatSettingsDTO;
 import java.util.List;
 
 public interface ChatRepository {
-    ChatModelDTO createChat(String uidFirebase, Long id, CreateChatDTO createChatDTO) throws InterruptedException;
-    ChatModelDTO createChatWithChatBot(String uidFirebase, Long id, CreateChatWithChatBotDTO createChatWithChatBotDTO) throws InterruptedException;
-    List<ChatModelDTO> newGetUserChats(String uidFirebase, Long id)  throws InterruptedException;
-    ChatModelDTO getChatByChatId (String uidFirebase, Long id, Long chatId) throws InterruptedException;
-    ChatModelDTO newUpdateChatSettings(String uidFirebase, Long id, UpdateChatSettingsDTO updateChatSettingsDTO) throws InterruptedException;
+    ChatModelDTO createChat(String uidFirebase, CreateChatDTO createChatDTO) throws InterruptedException;
+    ChatModelDTO createChatWithChatBot(String uidFirebase, CreateChatWithChatBotDTO createChatWithChatBotDTO) throws InterruptedException;
+    List<ChatModelDTO> newGetUserChats(String uidFirebase)  throws InterruptedException;
+    ChatModelDTO getChatByChatId (String uidFirebase, Long chatId) throws InterruptedException;
+    ChatModelDTO newUpdateChatSettings(String uidFirebase, UpdateChatSettingsDTO updateChatSettingsDTO) throws InterruptedException;
 }

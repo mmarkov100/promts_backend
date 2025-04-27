@@ -10,8 +10,8 @@ import com.promts.promts_test_server.dto.Message.outbound.SuccessDeleteMessagesD
 import java.util.List;
 
 public interface MessageService {
-    MessageGenerateResponse generateMessage(String uidFirebase, Long id, NewMessageDTO newMessageDTO) throws InterruptedException;
-    MessageGenerateResponse regenerateMessage(String uidFirebase, Long id, RegenerateMessageDTO regenerateMessageDTO);
-    List<MessageModelDTO> newGetMessagesByChatId(String uidFirebase, Long id, Long chatId) throws InterruptedException;
-    SuccessDeleteMessagesDTO deleteMessagesByMessageId(String uidFirebase, Long id, DeleteMessagesDTO deleteMessagesDTO);
+    MessageGenerateResponse generateMessage(String uidFirebase, NewMessageDTO newMessageDTO) throws InterruptedException;
+    MessageGenerateResponse regenerateMessage(String uidFirebase, RegenerateMessageDTO regenerateMessageDTO);
+    List<MessageModelDTO> newGetMessagesByChatId(String uidFirebase, Long chatId) throws InterruptedException;
+    SuccessDeleteMessagesDTO deleteMessagesByMessageId(String uidFirebase, DeleteMessagesDTO deleteMessagesDTO);
 }

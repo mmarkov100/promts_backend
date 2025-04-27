@@ -1,6 +1,7 @@
 package com.promts.promts_test_server.repository.User;
 
 import com.promts.promts_test_server.config.MockConfig;
+import com.promts.promts_test_server.controller.NeuralNetworkController;
 import com.promts.promts_test_server.dto.User.inbound.UpdateUserRequestDTO;
 import com.promts.promts_test_server.dto.User.inbound.UserInfoFromModelDTO;
 import com.promts.promts_test_server.dto.User.inbound.UserModelDTO;
@@ -14,10 +15,13 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 @Repository
 @Profile("mock")
 public class MockUserRepository implements UserRepository{
+
+    private static final Logger logger = Logger.getLogger(MockUserRepository.class.getName());
 
     @Autowired
     private MockNeuralNetworkRepository mockNeuralNetworkService;
@@ -31,6 +35,8 @@ public class MockUserRepository implements UserRepository{
         Thread.sleep(mockConfig.getDelay());
 
         try{
+            UserModelDTO output =  mockResponseUser.get(1);
+            logger.info("USER: " + output.toString());
             return mockResponseUser.get(1);
         } catch (RuntimeException e) {
             throw new GlobalException("SERVICE_IS_NOT_ACTIVE", "Сервис недоступен");
@@ -38,13 +44,13 @@ public class MockUserRepository implements UserRepository{
     }
 
     @Override
-    public UserModelDTO newUpdateUser(Long id, String uidFirebase, UpdateUserRequestDTO updateDTO) throws InterruptedException {
+    public UserModelDTO newUpdateUser(String uidFirebase, UpdateUserRequestDTO updateDTO) throws InterruptedException {
 
         // Имитация ожидания запроса
         Thread.sleep(mockConfig.getDelay());
 
         try{
-            UserModelDTO userDTO = mockResponseUser.get((int) (id-1));
+            UserModelDTO userDTO = mockResponseUser.get((int) (0));
             if (updateDTO.getMemory() != null) {
                 userDTO.setMemory(updateDTO.getMemory());
             }

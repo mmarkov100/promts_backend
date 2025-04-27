@@ -16,28 +16,28 @@ public class ChatService {
     @Autowired
     private ChatRepository chatRepository;
 
-    public ChatModelDTO createChat(String uidFirebase, Long id, CreateChatDTO createChatDTO) throws InterruptedException {
+    public ChatModelDTO createChat(String uidFirebase, CreateChatDTO createChatDTO) throws InterruptedException {
 
-        return chatRepository.createChat(uidFirebase, id, createChatDTO);
+        return chatRepository.createChat(uidFirebase, createChatDTO);
     }
 
-    public ChatModelDTO createChatWithChatBot(String uidFirebase, Long id, CreateChatWithChatBotDTO createChatWithChatBotDTO) throws InterruptedException {
+    public ChatModelDTO createChatWithChatBot(String uidFirebase, CreateChatWithChatBotDTO createChatWithChatBotDTO) throws InterruptedException {
 
-        return chatRepository.createChatWithChatBot(uidFirebase, id, createChatWithChatBotDTO);
+        return chatRepository.createChatWithChatBot(uidFirebase, createChatWithChatBotDTO);
     }
 
-    public List<ChatModelDTO> newGetUserChats(String uidFirebase, Long id) throws InterruptedException{
+    public List<ChatModelDTO> newGetUserChats(String uidFirebase) throws InterruptedException{
 
-        return chatRepository.newGetUserChats(uidFirebase, id);
+        return chatRepository.newGetUserChats(uidFirebase);
     }
 
-    public ChatModelDTO getChatByChatId(String uidFirebase, Long id, Long chatId) throws InterruptedException {
+    public ChatModelDTO getChatByChatId(String uidFirebase, Long chatId) throws InterruptedException {
 
-        return chatRepository.getChatByChatId(uidFirebase, id, chatId);
+        return chatRepository.getChatByChatId(uidFirebase, chatId);
     }
 
-    public ChatModelDTO newUpdateChatSettings(String uidFirebase, Long id, UpdateChatSettingsDTO updateChatSettingsDTO) throws InterruptedException {
+    public ChatModelDTO newUpdateChatSettings(String uidFirebase, UpdateChatSettingsDTO updateChatSettingsDTO) throws InterruptedException {
 
-        return chatRepository.newUpdateChatSettings(uidFirebase, id, updateChatSettingsDTO);
+        return chatRepository.newUpdateChatSettings(uidFirebase, updateChatSettingsDTO);
     }
 }

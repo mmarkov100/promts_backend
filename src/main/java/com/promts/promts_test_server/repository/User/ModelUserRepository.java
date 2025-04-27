@@ -15,7 +15,7 @@ public class ModelUserRepository implements UserRepository{
     }
 
     @Override
-    public UserModelDTO newUpdateUser(Long id, String uidFirebase, UpdateUserRequestDTO updateDTO) throws InterruptedException {
+    public UserModelDTO newUpdateUser(String uidFirebase, UpdateUserRequestDTO updateDTO) throws InterruptedException {
         return null;
     }
 }

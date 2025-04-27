@@ -10,7 +10,7 @@ import java.util.List;
 @Profile("model")
 public class ModelNeuralNetworkRepository implements NeuralNetworkRepository{
     @Override
-    public List<NeuralNetworkDTO> getAllNeuros(String uidFirebase, Long id) {
+    public List<NeuralNetworkDTO> getAllNeuros(String uidFirebase) {
         return List.of();
     }
 }

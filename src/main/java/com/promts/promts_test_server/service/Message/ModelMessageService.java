@@ -15,23 +15,23 @@ import java.util.List;
 @Profile("model")
 public class ModelMessageService implements MessageService{
     @Override
-    public MessageGenerateResponse generateMessage(String uidFirebase, Long id, NewMessageDTO newMessageDTO) {
+    public MessageGenerateResponse generateMessage(String uidFirebase, NewMessageDTO newMessageDTO) {
         return null;
     }
 
     @Override
-    public MessageGenerateResponse regenerateMessage(String uidFirebase, Long id, RegenerateMessageDTO regenerateMessageDTO) {
+    public MessageGenerateResponse regenerateMessage(String uidFirebase, RegenerateMessageDTO regenerateMessageDTO) {
         return null;
     }
 
     @Override
-    public List<MessageModelDTO> newGetMessagesByChatId(String uidFirebase, Long id, Long chatId) throws InterruptedException {
+    public List<MessageModelDTO> newGetMessagesByChatId(String uidFirebase, Long chatId) throws InterruptedException {
 
         return List.of();
     }
 
     @Override
-    public SuccessDeleteMessagesDTO deleteMessagesByMessageId(String uidFirebase, Long id, DeleteMessagesDTO deleteMessagesDTO) {
+    public SuccessDeleteMessagesDTO deleteMessagesByMessageId(String uidFirebase, DeleteMessagesDTO deleteMessagesDTO) {
         return null;
     }
 }

@@ -33,7 +33,7 @@ import java.util.Optional;
 @Profile("mock")
 public class MockMessageService implements MessageService{
     @Override
-    public MessageGenerateResponse generateMessage(String uidFirebase, Long id, NewMessageDTO newMessageDTO) throws InterruptedException {
+    public MessageGenerateResponse generateMessage(String uidFirebase, NewMessageDTO newMessageDTO) throws InterruptedException {
 
         Optional<NeuralNetworkDTO> neuralNetworkOpt = mockNeuralNetworkRepository.mockNeuralNetworkDTOS.stream()
                 .filter(neuro -> Objects.equals(neuro.getId(), newMessageDTO.getModelUriId()))
@@ -44,7 +44,7 @@ public class MockMessageService implements MessageService{
                 .findFirst();
 
         Optional<UserInfoFromModelDTO> userModelOpt = mockUserRepository.mockResponseUserWithChatsAndNeuros.stream()
-                .filter(user -> Objects.equals(user.getUser().getId(), id))
+                .filter(user -> Objects.equals(user.getUser().getId(), 1))
                 .findFirst();
 
         if (neuralNetworkOpt.isEmpty() || chatModelOpt.isEmpty() || userModelOpt.isEmpty()) {
@@ -56,7 +56,7 @@ public class MockMessageService implements MessageService{
         String memory = userModelOpt.get().getUser().getMemory();
         if (newMessageDTO.getModelUriId()==1) {
             memory = memory + "абвгд+: ";
-            mockUserRepository.mockResponseUserWithChatsAndNeuros.get((int) (id - 1)).getUser().setMemory(memory);
+            mockUserRepository.mockResponseUserWithChatsAndNeuros.get((int) (0)).getUser().setMemory(memory);
             updateMemory = true;
         }
 
@@ -69,9 +69,9 @@ public class MockMessageService implements MessageService{
                 newMessageDTO.getText(),
                 "MESSAGE"
         );
-        messageRepository.createNewMessage(uidFirebase, id, chatModelOpt.get().getId(), saveUserMessageDTO);
+        messageRepository.createNewMessage(uidFirebase, chatModelOpt.get().getId(), saveUserMessageDTO);
 
-        List<MessageModelDTO> messages = messageRepository.getAllChatMessagesByChatId(uidFirebase, id, newMessageDTO.getChatId());
+        List<MessageModelDTO> messages = messageRepository.getAllChatMessagesByChatId(uidFirebase, newMessageDTO.getChatId());
         List<MessageForGenerator> generatorMessages = new ArrayList<>();
         for (MessageModelDTO message : messages) {
             generatorMessages.add(new MessageForGenerator(
@@ -95,9 +95,9 @@ public class MockMessageService implements MessageService{
                 "MESSAGE"
         );
 
-        MessageModelDTO messageNeuroModelDTO = messageRepository.createNewMessage(uidFirebase, id, chatModelOpt.get().getId(), saveNeuroMessageDTO);
-        mockUserRepository.mockResponseUserWithChatsAndNeuros.get((int) (id - 1)).getUser()
-                .setMoney(mockUserRepository.mockResponseUserWithChatsAndNeuros.get((int) (id - 1)).getUser()
+        MessageModelDTO messageNeuroModelDTO = messageRepository.createNewMessage(uidFirebase, chatModelOpt.get().getId(), saveNeuroMessageDTO);
+        mockUserRepository.mockResponseUserWithChatsAndNeuros.get((int) (0)).getUser()
+                .setMoney(mockUserRepository.mockResponseUserWithChatsAndNeuros.get((int) (0)).getUser()
                         .getMoney()-responseGeneratedMessageDTO.getUsage().getCost());
         return new MessageGenerateResponse(
                 new MessageGenerateResponse.MessageRequest(
@@ -109,7 +109,7 @@ public class MockMessageService implements MessageService{
                 new MessageGenerateResponse.User(
                         updateMemory,
                         memory,
-                        mockUserRepository.mockResponseUserWithChatsAndNeuros.get((int) (id - 1)).getUser().getMoney(),
+                        mockUserRepository.mockResponseUserWithChatsAndNeuros.get((int) (0)).getUser().getMoney(),
                         responseGeneratedMessageDTO.getUsage().getCost()
                 )
         );
@@ -118,19 +118,19 @@ public class MockMessageService implements MessageService{
 
     //TODO Доделать позже
     @Override
-    public MessageGenerateResponse regenerateMessage(String uidFirebase, Long id, RegenerateMessageDTO regenerateMessageDTO) {
+    public MessageGenerateResponse regenerateMessage(String uidFirebase, RegenerateMessageDTO regenerateMessageDTO) {
         return null;
     }
 
     @Override
-    public List<MessageModelDTO> newGetMessagesByChatId(String uidFirebase, Long id, Long chatId) throws InterruptedException {
+    public List<MessageModelDTO> newGetMessagesByChatId(String uidFirebase, Long chatId) throws InterruptedException {
 
-        return messageRepository.getAllChatMessagesByChatId(uidFirebase, id, chatId);
+        return messageRepository.getAllChatMessagesByChatId(uidFirebase, chatId);
     }
 
     //TODO Доделать позже
     @Override
-    public SuccessDeleteMessagesDTO deleteMessagesByMessageId(String uidFirebase, Long id, DeleteMessagesDTO deleteMessagesDTO) {
+    public SuccessDeleteMessagesDTO deleteMessagesByMessageId(String uidFirebase, DeleteMessagesDTO deleteMessagesDTO) {
 
         return null;
     }

@@ -30,10 +30,9 @@ public class UserService {
     }
 
     public UserDTO newUpdateUser(String uidFirebase,
-                                      Long userId,
                                       UpdateUserRequestDTO requestDTO) throws InterruptedException {
 
-        UserModelDTO userModelDTO = userRepository.newUpdateUser(userId, uidFirebase, requestDTO);
+        UserModelDTO userModelDTO = userRepository.newUpdateUser(uidFirebase, requestDTO);
 
         return new UserDTO(
                 userModelDTO.getId(),

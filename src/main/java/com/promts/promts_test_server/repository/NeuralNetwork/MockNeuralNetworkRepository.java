@@ -18,7 +18,7 @@ public class MockNeuralNetworkRepository implements NeuralNetworkRepository{
     private MockConfig mockConfig;
 
     @Override
-    public List<NeuralNetworkDTO> getAllNeuros(String uidFirebase, Long id) throws InterruptedException {
+    public List<NeuralNetworkDTO> getAllNeuros(String uidFirebase   ) throws InterruptedException {
 
         // Имитация ожидания запроса
         Thread.sleep(mockConfig.getDelay());
@@ -33,5 +33,6 @@ public class MockNeuralNetworkRepository implements NeuralNetworkRepository{
         mockNeuralNetworkDTOS.add(new NeuralNetworkDTO(1L, "DeepSeek V3", "openrouter/deepseek-v3", "Мощная модель для генерации текста."));
         mockNeuralNetworkDTOS.add(new NeuralNetworkDTO(2L, "YandexGPT 5 Pro", "yandex/yangexgpt-5-pro", "Самая продвинутая русская модель"));
         mockNeuralNetworkDTOS.add(new NeuralNetworkDTO(3L, "ChatGPT 4o mini", "openrouter/chatgpt-4o-mini", "Дешевая нейросеть для повседневных задач"));
+        mockNeuralNetworkDTOS.add(new NeuralNetworkDTO(4L, "ChatGPT o3", "openrouter/chatgpt-o3", "Продвинутая в логике модель"));
     }
 }

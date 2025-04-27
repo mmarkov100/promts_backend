@@ -14,12 +14,9 @@ public class NeuralNetworkService {
     @Autowired
     private NeuralNetworkRepository networkRepository;
 
-    public List<NeuralNetworkDTO> getAllNeuros(Long id, String uidFirebase){
-
-
-
+    public List<NeuralNetworkDTO> getAllNeuros(String uidFirebase){
         try {
-            return networkRepository.getAllNeuros(uidFirebase, id);
+            return networkRepository.getAllNeuros(uidFirebase);
         } catch (Exception e){
             throw new GlobalException("SERVICE_IS_NOT_ACTIVE", "Сервис недоступен");
         }

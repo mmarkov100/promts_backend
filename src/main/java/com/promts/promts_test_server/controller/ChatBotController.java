@@ -19,39 +19,36 @@ public class ChatBotController {
     // Эндпоинт для получения чат-ботов по определенному запросу
     @GetMapping()
     public ResponseEntity<?> getChatBots(@RequestHeader String authorization,
-                                         @RequestHeader Long id,
                                          @RequestParam(name = "search", required = false, defaultValue = "") String search,
                                          @RequestParam(name = "limit", required = false, defaultValue = "10") int limit,
-                                         @RequestParam(name = "offset", required = false, defaultValue = "0") int offset) throws InterruptedException {
+                                         @RequestParam(name = "offset", required = false, defaultValue = "0") int offset) {
 
         // Сначала делаем проверку токена и получаем uid пользователя
         String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
 
         // Отправляем логику в сервис
-        return ResponseEntity.ok().body(chatBotService.getChatBots(search, limit, offset, id, uidFirebase));
+        return ResponseEntity.ok().body(chatBotService.getChatBots(search, limit, offset, uidFirebase));
     }
 
     // Эндпоинт получения информации о конкретном чат-боте
     @GetMapping("/{chat_bot_id}")
     public ResponseEntity<?> getChatBot(@PathVariable Long chat_bot_id,
-                                        @RequestHeader String authorization,
-                                        @RequestHeader Long id) throws InterruptedException {
+                                        @RequestHeader String authorization) {
 
         // Сначала делаем проверку токена и получаем uid пользователя
         String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
 
-        return ResponseEntity.ok().body(chatBotService.getChatBot(chat_bot_id, id, uidFirebase));
+        return ResponseEntity.ok().body(chatBotService.getChatBot(chat_bot_id, uidFirebase));
     }
 
     // Эндпоинт для создания чат-бота
     @PostMapping
     public ResponseEntity<?> createChatBot(@RequestHeader String authorization,
-                                           @RequestHeader Long id,
-                                           @RequestBody CreateChatBotDTO createChatBotDTO) throws InterruptedException {
+                                           @RequestBody CreateChatBotDTO createChatBotDTO) {
 
         // Сначала делаем проверку токена и получаем uid пользователя
         String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
 
-        return ResponseEntity.ok().body(chatBotService.createChatBot(createChatBotDTO, id, uidFirebase));
+        return ResponseEntity.ok().body(chatBotService.createChatBot(createChatBotDTO, uidFirebase));
     }
 }

@@ -11,12 +11,12 @@ import java.util.List;
 @Profile("model")
 public class ModelMessageRepository implements MessageRepository{
     @Override
-    public List<MessageModelDTO> getAllChatMessagesByChatId(String uidFirebase, Long id, Long chatId) {
+    public List<MessageModelDTO> getAllChatMessagesByChatId(String uidFirebase, Long chatId) {
         return List.of();
     }
 
     @Override
-    public MessageModelDTO createNewMessage(String uidFirebase, Long id, Long chatId, SaveMessageDTO newMessage) {
+    public MessageModelDTO createNewMessage(String uidFirebase, Long chatId, SaveMessageDTO newMessage) {
         return null;
     }
 }

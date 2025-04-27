@@ -20,7 +20,7 @@ public class MockChatBotRepository implements ChatBotRepository {
     private MockConfig mockConfig;
 
     @Override
-    public ChatBotsResponseDTO getAllChatBotsBySpec(Long id, String uidFirebase, String search, int offset, int limit) throws InterruptedException {
+    public ChatBotsResponseDTO getAllChatBotsBySpec(String uidFirebase, String search, int offset, int limit) throws InterruptedException {
 
         // Имитация ожидания запроса
         Thread.sleep(mockConfig.getDelay());
@@ -42,16 +42,16 @@ public class MockChatBotRepository implements ChatBotRepository {
     }
 
     @Override
-    public ChatBotResponseDTO getChatBotById(Long id, String uidFirebase, Long chatBotId) throws InterruptedException {
+    public ChatBotResponseDTO getChatBotById(String uidFirebase, Long chatBotId) throws InterruptedException {
 
         // Имитация ожидания запроса
         Thread.sleep(mockConfig.getDelay());
 
-        return mockResponseChatBot.get((int)(id - 1));
+        return mockResponseChatBot.getFirst();
     }
 
     @Override
-    public ChatBotResponseDTO createChatBotById(Long id, String uidFirebase, CreateChatBotDTO createChatBotDTO) throws InterruptedException {
+    public ChatBotResponseDTO createChatBotById(String uidFirebase, CreateChatBotDTO createChatBotDTO) throws InterruptedException {
 
         // Имитация ожидания запроса
         Thread.sleep(mockConfig.getDelay());
