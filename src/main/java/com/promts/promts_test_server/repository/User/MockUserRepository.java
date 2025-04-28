@@ -50,7 +50,7 @@ public class MockUserRepository implements UserRepository{
         Thread.sleep(mockConfig.getDelay());
 
         try{
-            UserModelDTO userDTO = mockResponseUser.get((int) (0));
+            UserModelDTO userDTO = mockResponseUser.get((int) (1));
             if (updateDTO.getMemory() != null) {
                 userDTO.setMemory(updateDTO.getMemory());
             }
@@ -96,7 +96,7 @@ public class MockUserRepository implements UserRepository{
                 "he@he.he",
                 "334cxlllasd33",
                 "USER",
-                2L,
+                3L,
                 20.00,
                 "Пользователь просит обращаться к нему мой господин",
                 true,
