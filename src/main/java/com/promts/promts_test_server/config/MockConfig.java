@@ -9,5 +9,5 @@ import org.springframework.context.annotation.Profile;
 @Getter
 public class MockConfig {
 
-    private final long delay = 1000;
+    private final long delay = 3000;
 }

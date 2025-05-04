@@ -35,8 +35,6 @@ public class MockUserRepository implements UserRepository{
         Thread.sleep(mockConfig.getDelay());
 
         try{
-            UserModelDTO output =  mockResponseUser.get(1);
-            logger.info("USER: " + output.toString());
             return mockResponseUser.get(1);
         } catch (RuntimeException e) {
             throw new GlobalException("SERVICE_IS_NOT_ACTIVE", "Сервис недоступен");

@@ -4,9 +4,11 @@ import com.promts.promts_test_server.dto.ChatBot.inbound.CreateChatBotDTO;
 import com.promts.promts_test_server.dto.ChatBot.outbound.ChatBotResponseDTO;
 import com.promts.promts_test_server.dto.ChatBot.outbound.ChatBotsResponseDTO;
 
+import java.util.List;
+
 public class ModelChatBotRepository implements ChatBotRepository{
     @Override
-    public ChatBotsResponseDTO getAllChatBotsBySpec(String uidFirebase, String search, int offset, int limit) {
+    public List<ChatBotResponseDTO> getAllChatBotsBySpec(String uidFirebase, String search, int offset, int limit) {
         return null;
     }
 

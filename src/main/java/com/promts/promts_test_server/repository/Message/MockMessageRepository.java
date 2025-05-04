@@ -43,7 +43,7 @@ public class MockMessageRepository implements MessageRepository{
         return mockMessageModel.stream()
                 .filter(message -> !message.isOldMessage()
                         && !Objects.equals(message.getType(), "SYSTEM")
-                        && Objects.equals(chatModelOpt.get().getUserId(), 1)
+                        && Objects.equals(chatModelOpt.get().getUserId(), 2L)
                         && Objects.equals(message.getChatId(), chatId))
                 .toList();
     }

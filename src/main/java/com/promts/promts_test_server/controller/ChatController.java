@@ -9,9 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.logging.Logger;
+
 @RestController
 @RequestMapping("/chats")
 public class ChatController {
+
+    private static final Logger logger = Logger.getLogger(ChatController.class.getName());
 
     @Autowired
     private AuthService authService;
@@ -21,6 +25,8 @@ public class ChatController {
     @PostMapping()
     public ResponseEntity<?> createChat(@RequestHeader String authorization,
                                           @RequestBody CreateChatDTO createChatDTO) throws InterruptedException {
+
+        logger.info("Got request for chat creating..");
 
         // Сначала делаем проверку токена и получаем uid пользователя
         String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
@@ -38,8 +44,10 @@ public class ChatController {
         return ResponseEntity.ok().body(chatService.createChatWithChatBot(uidFirebase, createChatDTO));
     }
 
-    @GetMapping("/new")
+    @PostMapping("/get")
     public ResponseEntity<?> newGetUserChats (@RequestHeader String authorization) throws InterruptedException{
+
+        logger.info("Got request for chat list..");
 
         // Сначала делаем проверку токена и получаем uid пользователя
         String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
@@ -60,6 +68,8 @@ public class ChatController {
     @PutMapping("/new")
     public ResponseEntity<?> newUpdateChatSettings(@RequestHeader String authorization,
                                                    @RequestBody UpdateChatSettingsDTO updateChatSettingsDTO) throws InterruptedException{
+
+        logger.info("Got request for editing settings.. + context: " + updateChatSettingsDTO.toString());
 
         // Сначала делаем проверку токена и получаем uid пользователя
         String uidFirebase = authService.getUidFirebaseAndValidate(authorization);

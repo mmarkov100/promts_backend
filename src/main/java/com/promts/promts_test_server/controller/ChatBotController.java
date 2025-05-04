@@ -17,11 +17,11 @@ public class ChatBotController {
     private AuthService authService;
 
     // Эндпоинт для получения чат-ботов по определенному запросу
-    @GetMapping()
+    @PostMapping("/get")
     public ResponseEntity<?> getChatBots(@RequestHeader String authorization,
                                          @RequestParam(name = "search", required = false, defaultValue = "") String search,
-                                         @RequestParam(name = "limit", required = false, defaultValue = "10") int limit,
-                                         @RequestParam(name = "offset", required = false, defaultValue = "0") int offset) {
+                                         @RequestParam(name = "limit", required = false, defaultValue = "") int limit,
+                                         @RequestParam(name = "offset", required = false, defaultValue = "") int offset) {
 
         // Сначала делаем проверку токена и получаем uid пользователя
         String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
@@ -31,7 +31,7 @@ public class ChatBotController {
     }
 
     // Эндпоинт получения информации о конкретном чат-боте
-    @GetMapping("/{chat_bot_id}")
+    @PostMapping("/{chat_bot_id}")
     public ResponseEntity<?> getChatBot(@PathVariable Long chat_bot_id,
                                         @RequestHeader String authorization) {
 

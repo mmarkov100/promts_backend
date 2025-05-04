@@ -9,9 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.logging.Logger;
+
 @RestController
 @RequestMapping("/messages")
 public class MessageController {
+
+    private static final Logger logger = Logger.getLogger(MessageController.class.getName());
 
     @Autowired
     private AuthService authService;
@@ -39,9 +43,11 @@ public class MessageController {
         return null;
     }
 
-    @GetMapping("/{chatId}")
+    @PostMapping("/{chatId}")
     public ResponseEntity<?> newGetMessagesByChatId(@RequestHeader String authorization,
                                                     @PathVariable Long chatId) throws InterruptedException {
+
+        logger.info("Got request to get chat history..");
 
         // Сначала делаем проверку токена и получаем uid пользователя
         String uidFirebase = authService.getUidFirebaseAndValidate(authorization);

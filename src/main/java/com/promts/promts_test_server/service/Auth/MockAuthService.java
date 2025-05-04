@@ -6,9 +6,13 @@ import com.promts.promts_test_server.exception.GlobalException;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
+import java.util.logging.Logger;
+
 @Service
 @Profile("mock")
 public class MockAuthService implements AuthService{
+
+    private static final Logger logger = Logger.getLogger(MockAuthService.class.getName());
 
     private final String mockJWTToken = "Bearer 1234jwt";
 
@@ -28,14 +32,20 @@ public class MockAuthService implements AuthService{
     @Override
     public SuccessAuthDTO registerNewUser(String email, String password){
         if (email.isEmpty() || password.isEmpty()){
+            logger.info("Отсутствие логина или пароля");
             throw new GlobalException("REGISTRATION_ERROR", "Отсутствует логин или пароль");
         }
-        return new SuccessAuthDTO(true, "Успешно создан аккаунт (на самом деле не создан, это мок)");
+
+        SuccessAuthDTO response = new SuccessAuthDTO(true, "Успешно создан аккаунт (на самом деле не создан, это мок)");
+        logger.info("Все круто: " + response);
+        return response;
     }
 
     @Override
     public SuccessAuthDTO actualiseToken(String authorization) {
+
         if (authorization.isEmpty()){
+
             throw new GlobalException("TOKEN_ACTUALISE_ERROR", "Токен авторизации недействителен");
         } else if (!authorization.equals(mockJWTToken)) {
             throw new GlobalException("TOKEN_ACTUALISE_ERROR", "Токен авторизации недействителен");
@@ -46,10 +56,14 @@ public class MockAuthService implements AuthService{
     @Override
     public SuccessLoginDTO loginUserGetJWTToken(String email, String password) {
 
+
+
         // Тут происходит проверка логина и пароля, моково пока что просто проверка на пустоту
         if (email.isEmpty() || password.isEmpty()){
             throw new GlobalException("LOGIN_ERROR", "Отсутствует логин или пароль");
         }
-        return new SuccessLoginDTO(true, "Успешный вход в аккаунт", mockJWTToken);
+
+        String[] jwt = mockJWTToken.split(" ");
+        return new SuccessLoginDTO(true, "Успешный вход в аккаунт", jwt[1]);
     }
 }

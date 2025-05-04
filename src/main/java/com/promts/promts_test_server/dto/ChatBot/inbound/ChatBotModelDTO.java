@@ -1,25 +1,27 @@
-package com.promts.promts_test_server.dto.Chat.inbound;
+package com.promts.promts_test_server.dto.ChatBot.inbound;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-@ToString
-public class ChatModelDTO {
+@AllArgsConstructor
+public class ChatBotModelDTO {
+
     private Long id;
     private Long userId;
-    private Long chatBotId;
-    private String chatName;
+    private String chatBotName;
+    private String chatBotDesc;
+    private String helloMessage;
     private Long modelUriId;
     private double temperature;
     private String context;
-    private boolean starredChat;
-    private boolean useMemory;
-    private boolean updateMemory;
+    private boolean isSelectedByRedact;
     private boolean canUseMemory;
     private boolean canUpdateMemory;
     private boolean canEditModelUri;
@@ -27,4 +29,3 @@ public class ChatModelDTO {
     private LocalDateTime dateEdit;
     private LocalDateTime dateCreate;
 }
-

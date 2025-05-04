@@ -37,7 +37,7 @@ public class MockChatRepository implements ChatRepository{
 
         mockResponseChats.add(new ChatModelDTO(
                 (long)mockResponseChats.size()+1,
-                0L,
+                2L,
                 null,
                 "Чат номер " + (long)mockResponseChats.size()+1,
                 createChatDTO.getModelUriId(),
@@ -67,11 +67,13 @@ public class MockChatRepository implements ChatRepository{
         // Имитация ожидания запроса
         Thread.sleep(mockConfig.getDelay());
 
+        Long chatId = (long)(mockResponseChats.size()+1);
+
         mockResponseChats.add(new ChatModelDTO(
-                (long)mockResponseChats.size()+1,
-                0L,
+                chatId,
+                2L,
                 createChatWithChatBotDTO.getChatBotId(),
-                "Чат номер " + (long)mockResponseChats.size()+1,
+                "Чат номер " + chatId,
                 createChatWithChatBotDTO.getModelUriId(),
                 createChatWithChatBotDTO.getTemperature(),
                 createChatWithChatBotDTO.getContext(),
@@ -95,7 +97,10 @@ public class MockChatRepository implements ChatRepository{
         // Имитация ожидания запроса
         Thread.sleep(mockConfig.getDelay());
 
-        return mockResponseChats.stream().filter(chat -> Objects.equals(chat.getUserId(), 0L)).toList();
+        List<ChatModelDTO> response = mockResponseChats.stream().filter(chat -> Objects.equals(chat.getUserId(), 2L)).toList();
+        response.forEach(x -> System.out.println(x.toString()));
+
+        return response;
     }
 
     @Override
@@ -128,6 +133,7 @@ public class MockChatRepository implements ChatRepository{
         mockResponseChats.get(Math.toIntExact(updateChatSettingsDTO.getChatId()-1)).setContext(updateChatSettingsDTO.getContext());
         mockResponseChats.get(Math.toIntExact(updateChatSettingsDTO.getChatId()-1)).setUseMemory(updateChatSettingsDTO.isUseMemory());
         mockResponseChats.get(Math.toIntExact(updateChatSettingsDTO.getChatId()-1)).setUpdateMemory(updateChatSettingsDTO.isUpdateMemory());
+        mockResponseChats.get(Math.toIntExact(updateChatSettingsDTO.getChatId()-1)).setStarredChat(updateChatSettingsDTO.isStarredChat());
 
         return mockResponseChats.get(Math.toIntExact(updateChatSettingsDTO.getChatId()-1));
     }
@@ -219,6 +225,25 @@ public class MockChatRepository implements ChatRepository{
         mockResponseChats.add(new ChatModelDTO(
                 5L,
                 2L,
+                null,
+                "Чат с редактированием контекста",
+                2L,
+                0.9,
+                "Первоначальный контекст",
+                false,
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+                now.minusMinutes(15),
+                now.minusHours(5)
+        ));
+
+        mockResponseChats.add(new ChatModelDTO(
+                6L,
+                1L,
                 null,
                 "Чат с редактированием контекста",
                 2L,

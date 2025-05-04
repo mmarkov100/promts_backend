@@ -3,7 +3,6 @@ package com.promts.promts_test_server.repository.ChatBot;
 import com.promts.promts_test_server.config.MockConfig;
 import com.promts.promts_test_server.dto.ChatBot.inbound.CreateChatBotDTO;
 import com.promts.promts_test_server.dto.ChatBot.outbound.ChatBotResponseDTO;
-import com.promts.promts_test_server.dto.ChatBot.outbound.ChatBotsResponseDTO;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -20,25 +19,12 @@ public class MockChatBotRepository implements ChatBotRepository {
     private MockConfig mockConfig;
 
     @Override
-    public ChatBotsResponseDTO getAllChatBotsBySpec(String uidFirebase, String search, int offset, int limit) throws InterruptedException {
+    public List<ChatBotResponseDTO> getAllChatBotsBySpec(String uidFirebase, String search, int offset, int limit) throws InterruptedException {
 
         // Имитация ожидания запроса
         Thread.sleep(mockConfig.getDelay());
 
-        ChatBotsResponseDTO responseDTOS = new ChatBotsResponseDTO();
-        List<ChatBotsResponseDTO.ChatBotShort> chatBotShort = new ArrayList<>();
-        for (ChatBotResponseDTO chatBotResponseDTO : mockResponseChatBot) {
-            chatBotShort.add(new ChatBotsResponseDTO.ChatBotShort(
-                    chatBotResponseDTO.getId(),
-                    chatBotResponseDTO.getChatBotName(),
-                    chatBotResponseDTO.getChatBotDesc(),
-                    chatBotResponseDTO.getMessagesToday(),
-                    chatBotResponseDTO.getTotalMessages(),
-                    chatBotResponseDTO.isSelectedByRedact()
-            ));
-        }
-        responseDTOS.setChatBots(chatBotShort);
-        return responseDTOS;
+        return new ArrayList<>(mockResponseChatBot);
     }
 
     @Override
