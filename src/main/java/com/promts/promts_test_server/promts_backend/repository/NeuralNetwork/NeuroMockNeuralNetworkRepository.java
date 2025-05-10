@@ -13,6 +13,7 @@ import java.util.List;
 public class NeuroMockNeuralNetworkRepository implements  NeuralNetworkRepository{
     @Override
     public List<NeuralNetworkDTO> getAllNeuros(String uidFirebase) throws InterruptedException {
+
         return mockNeuralNetworkDTOS;
     }
 

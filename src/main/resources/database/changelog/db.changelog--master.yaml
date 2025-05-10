@@ -1,0 +1,7 @@
+databaseChangeLog:
+  # 0️⃣  сначала справочник нейросетей
+  - include:
+      file: database/changelog/001-create-model-uri-table.yaml
+  # 1️⃣  потом таблица пользователей с FK
+  - include:
+      file: database/changelog/002-create-app-user-table.yaml

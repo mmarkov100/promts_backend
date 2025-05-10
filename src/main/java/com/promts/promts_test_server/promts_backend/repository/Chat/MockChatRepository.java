@@ -72,7 +72,7 @@ public class MockChatRepository implements ChatRepository{
         ));
 
         mockDataStore.chatCounter++;
-        return mockDataStore.chats.getLast();
+        return mockDataStore.chats.get(mockDataStore.chats.size()-1);
     }
 
     @Override
@@ -105,7 +105,7 @@ public class MockChatRepository implements ChatRepository{
         ));
 
         mockDataStore.chatCounter++;
-        return mockDataStore.chats.getLast();
+        return mockDataStore.chats.get(mockDataStore.chats.size()-1);
     }
 
     @Override

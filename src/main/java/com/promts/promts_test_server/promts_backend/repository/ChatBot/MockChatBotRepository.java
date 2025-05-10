@@ -34,7 +34,7 @@ public class MockChatBotRepository implements ChatBotRepository {
         // Имитация ожидания запроса
         Thread.sleep(mockBackendConfig.getDelay());
 
-        return mockResponseChatBot.getFirst();
+        return mockResponseChatBot.get(0);
     }
 
     @Override

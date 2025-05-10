@@ -60,6 +60,6 @@ public class MockMessageRepository implements MessageRepository{
                 LocalDateTime.now()
         ));
         mockDataStore.messageCounter++;
-        return mockDataStore.messages.getLast();
+        return mockDataStore.messages.get(mockDataStore.messages.size()-1);
     }
 }

@@ -29,7 +29,7 @@ public class MockGeneratorRepository implements GeneratorRepository{
     public ResponseGeneratedMessageDTO generateMessage(String modelUri, List<MessageForGenerator> text, String context, double temperature) throws InterruptedException {
 
         return switch (modelUri) {
-            case "yandex/yangexgpt-5-pro" -> mockGeneratedMessage.getFirst();
+            case "yandex/yangexgpt-5-pro" -> mockGeneratedMessage.get(0);
             case "openrouter/deepseek-v3" -> mockGeneratedMessage.get(1);
             case "openrouter/chatgpt-4o-mini" -> mockGeneratedMessage.get(2);
             default -> throw new GlobalException("NO_EXISTED_MODEL", "Такой модели для генерации не существует");

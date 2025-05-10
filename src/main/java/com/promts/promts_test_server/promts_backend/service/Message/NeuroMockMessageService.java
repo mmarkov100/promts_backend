@@ -122,7 +122,7 @@ public class NeuroMockMessageService implements MessageService{
             if (chatModelOpt.get().isUpdateMemory()) {
                 String userMemory = userModelOpt.get().getMemory();
                 String memoryContext = memoryRules + userMemory;
-                String networkMemory = networkRepository.mockNeuralNetworkDTOS.getFirst().getSystemName();
+                String networkMemory = networkRepository.mockNeuralNetworkDTOS.get(0).getSystemName();
                 responseMemory = generatorRepository.generateMessage(networkMemory, generatorMessages, memoryContext, memoryTemperature);
                 totalCost += responseMemory.getUsage().getCost();
 
