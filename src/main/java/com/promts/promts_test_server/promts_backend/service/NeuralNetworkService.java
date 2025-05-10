@@ -1,0 +1,24 @@
+package com.promts.promts_test_server.promts_backend.service;
+
+import com.promts.promts_test_server.promts_backend.dto.NeuralNetwork.outbound.NeuralNetworkDTO;
+import com.promts.promts_test_server.shared.exception.GlobalException;
+import com.promts.promts_test_server.promts_backend.repository.NeuralNetwork.NeuralNetworkRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class NeuralNetworkService {
+
+    @Autowired
+    private NeuralNetworkRepository networkRepository;
+
+    public List<NeuralNetworkDTO> getAllNeuros(String uidFirebase){
+        try {
+            return networkRepository.getAllNeuros(uidFirebase);
+        } catch (Exception e){
+            throw new GlobalException("SERVICE_IS_NOT_ACTIVE", "Сервис недоступен");
+        }
+    }
+}
