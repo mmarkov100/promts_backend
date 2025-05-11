@@ -13,6 +13,8 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Repository
 @Profile({"mock", "neuro"})
@@ -24,26 +26,26 @@ public class MockUserRepository implements UserRepository{
     private MockBackendConfig mockBackendConfig;
 
     @Override
-    public UserModelDTO newGetUser(String uidFirebase) throws InterruptedException {
+    public UserModelDTO getUser(String uidFirebase) throws InterruptedException {
 
         // Имитация ожидания запроса
         Thread.sleep(mockBackendConfig.getDelay());
 
         try{
-            return mockResponseUser.get((int) (mockBackendConfig.getUserId()));
+            return getUserModelDTO(uidFirebase);
         } catch (RuntimeException e) {
             throw new GlobalException("SERVICE_IS_NOT_ACTIVE", "Сервис недоступен");
         }
     }
 
     @Override
-    public UserModelDTO newUpdateUser(String uidFirebase, UpdateUserRequestDTO updateDTO) throws InterruptedException {
+    public UserModelDTO updateUser(String uidFirebase, UpdateUserRequestDTO updateDTO) throws InterruptedException {
 
         // Имитация ожидания запроса
         Thread.sleep(mockBackendConfig.getDelay());
 
         try{
-            UserModelDTO userDTO = mockResponseUser.get((int) (mockBackendConfig.getUserId()));
+            UserModelDTO userDTO =getUserModelDTO(uidFirebase);
             if (updateDTO.getMemory() != null) {
                 userDTO.setMemory(updateDTO.getMemory());
             }
@@ -63,6 +65,14 @@ public class MockUserRepository implements UserRepository{
         }
     }
 
+    private UserModelDTO getUserModelDTO(String uidFirebase) {
+        Optional<UserModelDTO> userOpt = mockResponseUser.stream().filter(user -> Objects.equals(user.getUidFirebase(), uidFirebase)).findFirst();
+        if (userOpt.isEmpty()) {
+            throw new GlobalException("USER_NOT_FOUND", "Пользователь не найден");
+        }
+        return userOpt.get();
+    }
+
     public final List<UserModelDTO> mockResponseUser = new ArrayList<>();
 
     @PostConstruct
@@ -72,7 +82,7 @@ public class MockUserRepository implements UserRepository{
         mockResponseUser.add(new UserModelDTO(
                 0L,
                 "user@example.com",
-                "44asds23l0332a;",
+                "44asds23l0332a",
                 "USER",
                 1L,
                 20.00,

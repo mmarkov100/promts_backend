@@ -20,7 +20,7 @@ public class AppUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 255, nullable = false, unique = true)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Column(name = "uid_firebase", nullable = false, unique = true, length = 128)
@@ -32,7 +32,7 @@ public class AppUser {
     private UserRole role = UserRole.USER;
 
     @Column(name = "standard_model_uri_id")
-    private Long standardModelUriId;
+    private Long standardModelUriId = 0L;
 
     @Column(nullable = false, precision = 10, scale = 4)
     @Builder.Default

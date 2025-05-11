@@ -15,14 +15,22 @@ public class AppUserService {
 
     private final AppUserRepository repo;
 
-    public AppUserDto save(AppUserDto dto) {
-        AppUser user = fromDto(dto);
+    public AppUserDto updateUserSettings(AppUserDto dto) {
+        AppUser userDTO = fromDto(dto);
+        AppUser user = repo.findByUidFirebase(dto.getUidFirebase()).orElseThrow();
+
+        user.setMemory(userDTO.getMemory());
+        user.setMemoryEnabled(userDTO.isMemoryEnabled());
+        user.setAiCanUpdateMemory(userDTO.isAiCanUpdateMemory());
+        user.setStandardModelUriId(userDTO.getStandardModelUriId());
 
         return toDto(repo.save(user));
     }
 
-    public AppUserDto create(AppUserDto dto) {
+    public AppUserDto createUser(AppUserDto dto) {
         AppUser user = fromDto(dto);
+        user.setStandardModelUriId(0L);
+        user.setMemory("");
 
         return toDto(repo.save(user));
     }

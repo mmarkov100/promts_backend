@@ -56,7 +56,7 @@ public class MessageController {
         // Сначала делаем проверку токена и получаем uid пользователя
         String uidFirebase = authService.getUidFirebaseAndValidate(authorization);
 
-        return ResponseEntity.ok().body(messageService.newGetMessagesByChatId(uidFirebase, chatId));
+        return ResponseEntity.ok().body(messageService.getMessagesByChatId(uidFirebase, chatId));
     }
 
     //TODO Сделать позже

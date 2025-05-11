@@ -1,20 +1,28 @@
 package com.promts.promts_test_server.promts_backend.service.Auth;
 
+import com.promts.promts_test_server.promts_backend.config.MockBackendConfig;
 import com.promts.promts_test_server.promts_backend.dto.Shared.outbound.SuccessMessageDTO;
 import com.promts.promts_test_server.promts_backend.dto.Auth.outbound.SuccessLoginDTO;
 import com.promts.promts_test_server.shared.exception.GlobalException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.util.logging.Logger;
 
 @Service
-@Profile({"mock", "neuro"})
+@Profile({"neuro"})
 public class MockAuthService implements AuthService{
 
     private static final Logger logger = Logger.getLogger(MockAuthService.class.getName());
 
     private final String mockJWTToken = "Bearer 1234jwt";
+
+    private final MockBackendConfig mockBackendConfig;
+    @Autowired
+    public MockAuthService(MockBackendConfig mockBackendConfig) {
+        this.mockBackendConfig = mockBackendConfig;
+    }
 
     // Происходит проверка токена для его актуализации
     @Override
@@ -26,7 +34,7 @@ public class MockAuthService implements AuthService{
         }
 
         // Выдает uidFirebase пользователя, но мокова пока что только это слово
-        return "approved";
+        return mockBackendConfig.getUserUidFirebase();
     }
 
     @Override
@@ -55,8 +63,6 @@ public class MockAuthService implements AuthService{
 
     @Override
     public SuccessLoginDTO loginUserGetJWTToken(String email, String password) {
-
-
 
         // Тут происходит проверка логина и пароля, моково пока что просто проверка на пустоту
         if (email.isEmpty() || password.isEmpty()){

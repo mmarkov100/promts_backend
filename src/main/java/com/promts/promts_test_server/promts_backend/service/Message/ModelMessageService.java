@@ -25,7 +25,7 @@ public class ModelMessageService implements MessageService{
     }
 
     @Override
-    public List<MessageModelDTO> newGetMessagesByChatId(String uidFirebase, Long chatId) throws InterruptedException {
+    public List<MessageModelDTO> getMessagesByChatId(String uidFirebase, Long chatId) throws InterruptedException {
 
         return List.of();
     }

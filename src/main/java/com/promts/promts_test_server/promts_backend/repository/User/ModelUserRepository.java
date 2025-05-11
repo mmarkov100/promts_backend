@@ -10,12 +10,12 @@ import org.springframework.stereotype.Repository;
 public class ModelUserRepository implements UserRepository{
 
     @Override
-    public UserModelDTO newGetUser(String uidFirebase) throws InterruptedException {
+    public UserModelDTO getUser(String uidFirebase) throws InterruptedException {
         return null;
     }
 
     @Override
-    public UserModelDTO newUpdateUser(String uidFirebase, UpdateUserRequestDTO updateDTO) throws InterruptedException {
+    public UserModelDTO updateUser(String uidFirebase, UpdateUserRequestDTO updateDTO) throws InterruptedException {
         return null;
     }
 }

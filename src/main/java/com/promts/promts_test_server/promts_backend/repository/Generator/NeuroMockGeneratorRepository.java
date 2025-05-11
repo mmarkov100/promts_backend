@@ -15,7 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 
 @Repository
-@Profile({"neuro"})
+@Profile({"neuro", "dbmock"})
 public class NeuroMockGeneratorRepository implements GeneratorRepository{
 
     private final RestTemplate restTemplate;

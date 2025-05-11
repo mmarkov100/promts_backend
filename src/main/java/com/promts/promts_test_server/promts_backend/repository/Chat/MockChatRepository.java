@@ -19,7 +19,7 @@ import java.util.Objects;
 import java.util.logging.Logger;
 
 @Repository
-@Profile({"mock", "neuro"})
+@Profile({"mock", "neuro", "dbmock"})
 public class MockChatRepository implements ChatRepository{
 
     private final MockChatBotRepository mockChatBotRepository;

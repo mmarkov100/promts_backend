@@ -144,7 +144,6 @@ public class MockMessageService implements MessageService{
                         userRepository.mockResponseUser.get((int) (mockBackendConfig.getUserId()-1)).getMoney()
                 )
         );
-        logger.info("Created message: " + response.toString());
         return response;
     }
 
@@ -155,7 +154,7 @@ public class MockMessageService implements MessageService{
     }
 
     @Override
-    public List<MessageModelDTO> newGetMessagesByChatId(String uidFirebase, Long chatId) throws InterruptedException {
+    public List<MessageModelDTO> getMessagesByChatId(String uidFirebase, Long chatId) throws InterruptedException {
 
         // Имитация ожидания запроса
         Thread.sleep(mockBackendConfig.getDelay());

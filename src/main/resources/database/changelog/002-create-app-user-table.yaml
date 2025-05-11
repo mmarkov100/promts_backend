@@ -35,12 +35,13 @@ databaseChangeLog:
               - column:
                   name: standard_model_uri_id
                   type: BIGINT
+                  defaultValueNumeric: 0
                   constraints:
                     nullable: true
               - column:
                   name: money
                   type: DECIMAL(10,4)
-                  defaultValueNumeric: 0
+                  defaultValueNumeric: 20
                   constraints:
                     nullable: false
               - column:

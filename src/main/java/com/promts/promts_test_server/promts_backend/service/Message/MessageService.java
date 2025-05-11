@@ -12,6 +12,6 @@ import java.util.List;
 public interface MessageService {
     MessageGenerateResponse generateMessage(String uidFirebase, NewMessageDTO newMessageDTO) throws InterruptedException;
     MessageGenerateResponse regenerateMessage(String uidFirebase, RegenerateMessageDTO regenerateMessageDTO);
-    List<MessageModelDTO> newGetMessagesByChatId(String uidFirebase, Long chatId) throws InterruptedException;
+    List<MessageModelDTO> getMessagesByChatId(String uidFirebase, Long chatId) throws InterruptedException;
     SuccessDeleteMessagesDTO deleteMessagesByMessageId(String uidFirebase, DeleteMessagesDTO deleteMessagesDTO);
 }

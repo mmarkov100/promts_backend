@@ -4,6 +4,6 @@ import com.promts.promts_test_server.promts_backend.dto.User.inbound.UpdateUserR
 import com.promts.promts_test_server.promts_backend.dto.User.inbound.UserModelDTO;
 
 public interface UserRepository {
-    UserModelDTO newGetUser(String uidFirebase) throws InterruptedException;
-    UserModelDTO newUpdateUser(String uidFirebase, UpdateUserRequestDTO updateDTO) throws InterruptedException;
+    UserModelDTO getUser(String uidFirebase) throws InterruptedException;
+    UserModelDTO updateUser(String uidFirebase, UpdateUserRequestDTO updateDTO) throws InterruptedException;
 }

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/db/users")
 @RequiredArgsConstructor
 public class AppUserController {
 
@@ -21,13 +21,13 @@ public class AppUserController {
 
     @PostMapping
     public ResponseEntity<AppUserDto> create(@RequestBody AppUserDto dto) {
-        AppUserDto saved = service.create(dto);
+        AppUserDto saved = service.createUser(dto);
         return ResponseEntity.ok(saved);
     }
 
-    @PutMapping("/{id}")
-    public AppUserDto update(@PathVariable Long id, @RequestBody AppUserDto dto) {
-        dto.setId(id);
-        return service.save(dto);
+    @PutMapping("/uid/{uidFirebase}")
+    public AppUserDto update(@PathVariable String uidFirebase, @RequestBody AppUserDto dto) {
+        dto.setUidFirebase(uidFirebase);
+        return service.updateUserSettings(dto);
     }
 }

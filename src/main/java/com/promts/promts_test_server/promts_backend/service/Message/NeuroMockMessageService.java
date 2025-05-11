@@ -13,12 +13,12 @@ import com.promts.promts_test_server.promts_backend.dto.Message.outbound.SaveMes
 import com.promts.promts_test_server.promts_backend.dto.Message.outbound.SuccessDeleteMessagesDTO;
 import com.promts.promts_test_server.promts_backend.dto.NeuralNetwork.outbound.NeuralNetworkDTO;
 import com.promts.promts_test_server.promts_backend.dto.User.inbound.UserModelDTO;
+import com.promts.promts_test_server.promts_backend.repository.NeuralNetwork.NeuralNetworkRepository;
+import com.promts.promts_test_server.promts_backend.repository.User.UserRepository;
 import com.promts.promts_test_server.shared.exception.GlobalException;
 import com.promts.promts_test_server.promts_backend.repository.DataSore.MockDataStore;
 import com.promts.promts_test_server.promts_backend.repository.Generator.GeneratorRepository;
 import com.promts.promts_test_server.promts_backend.repository.Message.MessageRepository;
-import com.promts.promts_test_server.promts_backend.repository.NeuralNetwork.NeuroMockNeuralNetworkRepository;
-import com.promts.promts_test_server.promts_backend.repository.User.MockUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -27,23 +27,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.logging.Logger;
 
 @Service
-@Profile({"neuro"})
+@Profile({"neuro", "dbmock"})
 public class NeuroMockMessageService implements MessageService{
-
-    private static final Logger logger = Logger.getLogger(NeuroMockMessageService.class.getName());
 
     private final MockBackendConfig mockBackendConfig;
     private final MessageRepository messageRepository;
     private final GeneratorRepository generatorRepository;
-    private final NeuroMockNeuralNetworkRepository networkRepository;
+    private final NeuralNetworkRepository networkRepository;
     private final MockDataStore mockDataStore;
-    private final MockUserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public NeuroMockMessageService(MockBackendConfig mockBackendConfig, MessageRepository messageRepository, GeneratorRepository generatorRepository, NeuroMockNeuralNetworkRepository networkRepository, MockDataStore mockDataStore, MockUserRepository userRepository) {
+    public NeuroMockMessageService(MockBackendConfig mockBackendConfig, MessageRepository messageRepository, GeneratorRepository generatorRepository, NeuralNetworkRepository networkRepository, MockDataStore mockDataStore, UserRepository userRepository) {
         this.mockBackendConfig = mockBackendConfig;
         this.messageRepository = messageRepository;
         this.generatorRepository = generatorRepository;
@@ -73,9 +70,9 @@ public class NeuroMockMessageService implements MessageService{
     private final double memoryTemperature = 0.1;
 
     @Override
-    public MessageGenerateResponse generateMessage(String uidFirebase, NewMessageDTO newMessageDTO) throws InterruptedException {
+    public MessageGenerateResponse  generateMessage(String uidFirebase, NewMessageDTO newMessageDTO) throws InterruptedException {
         // Определяем, существует ли такая нейросеть в бд
-        Optional<NeuralNetworkDTO> neuralNetworkOpt = networkRepository.mockNeuralNetworkDTOS.stream()
+        Optional<NeuralNetworkDTO> neuralNetworkOpt = networkRepository.getAllNeuros(uidFirebase).stream()
                 .filter(neuro -> Objects.equals(neuro.getId(), newMessageDTO.getModelUriId()))
                 .findFirst();
 
@@ -85,19 +82,19 @@ public class NeuroMockMessageService implements MessageService{
                 .findFirst();
 
         // Определеяем, существует ли такой пользователь в бд
-        Optional<UserModelDTO> userModelOpt = userRepository.mockResponseUser.stream()
-                .filter(user -> Objects.equals(user.getId(), mockBackendConfig.getUserId()))
-                .findFirst();
+        UserModelDTO userModelDTO = userRepository.getUser(uidFirebase);
 
-        if (neuralNetworkOpt.isEmpty() || chatModelOpt.isEmpty() || userModelOpt.isEmpty()) {
+        if (neuralNetworkOpt.isEmpty() || chatModelOpt.isEmpty()) {
             throw new GlobalException("NO_EXISTED_MODEL","Не существующая модель для генерации или нет такого чата");
         }
+        NeuralNetworkDTO neuralNetworkDTO = neuralNetworkOpt.get();
+        ChatModelDTO chatModelDTO = chatModelOpt.get();
 
         // Обновляем нейросеть в соответствии с той, что указано в сообщении
-        chatModelOpt.get().setModelUriId(newMessageDTO.getModelUriId());
+        chatModelDTO.setModelUriId(newMessageDTO.getModelUriId());
 
         // Получаем системное название нейросети
-        String networkName =neuralNetworkOpt.get().getSystemName();
+        String networkName =neuralNetworkDTO.getSystemName();
 
         // Получаем все сообщения чата
         List<MessageModelDTO> messages = messageRepository.getAllChatMessagesByChatId(uidFirebase, newMessageDTO.getChatId());
@@ -119,10 +116,10 @@ public class NeuroMockMessageService implements MessageService{
         boolean isUpdated = false;
         ResponseGeneratedMessageDTO responseMemory;
         try {
-            if (chatModelOpt.get().isUpdateMemory()) {
-                String userMemory = userModelOpt.get().getMemory();
+            if (chatModelDTO.isUpdateMemory()) {
+                String userMemory = userModelDTO.getMemory();
                 String memoryContext = memoryRules + userMemory;
-                String networkMemory = networkRepository.mockNeuralNetworkDTOS.get(0).getSystemName();
+                String networkMemory = neuralNetworkDTO.getSystemName();
                 responseMemory = generatorRepository.generateMessage(networkMemory, generatorMessages, memoryContext, memoryTemperature);
                 totalCost += responseMemory.getUsage().getCost();
 
@@ -139,7 +136,7 @@ public class NeuroMockMessageService implements MessageService{
                     memory = userMemory;
                 }
 
-                userModelOpt.get().setMemory(memory);
+                userModelDTO.setMemory(memory);
             }
         } catch (RuntimeException e) {
             throw new GlobalException("MEMORY_CHANGE_ERROR", "Ошибка при изменении памяти нейросетью");
@@ -148,11 +145,11 @@ public class NeuroMockMessageService implements MessageService{
         // Делаем запрос на генерацию уже основного сообщения
         ResponseGeneratedMessageDTO responseMessage = new ResponseGeneratedMessageDTO();
         try {
-            if (chatModelOpt.get().isUseMemory()) {
-                String userMemory = "<Инфорация о пользователе: >" + userModelOpt.get().getMemory();
-                String chatContext = "<Контекст: >" + chatModelOpt.get().getContext();
+            if (chatModelDTO.isUseMemory()) {
+                String userMemory = "<Инфорация о пользователе: >" + userModelDTO.getMemory();
+                String chatContext = "<Контекст: >" + chatModelDTO.getContext();
                 String context = userMemory + "\n" + chatContext;
-                double temp = chatModelOpt.get().getTemperature();
+                double temp = chatModelDTO.getTemperature();
                 responseMessage = generatorRepository.generateMessage(networkName, generatorMessages, context, temp);
                 totalCost += responseMessage.getUsage().getCost();
             }
@@ -162,7 +159,7 @@ public class NeuroMockMessageService implements MessageService{
 
         // Сохранение сообщения пользователя
         SaveMessageDTO saveUserMessageDTO = new SaveMessageDTO(
-                chatModelOpt.get().getId(),
+                chatModelDTO.getId(),
                 null,
                 false,
                 "user",
@@ -171,23 +168,21 @@ public class NeuroMockMessageService implements MessageService{
         );
 
         SaveMessageDTO saveNeuroMessageDTO = new SaveMessageDTO(
-                chatModelOpt.get().getId(),
+                chatModelDTO.getId(),
                 newMessageDTO.getModelUriId(),
                 false,
                 "assistant",
                 responseMessage.getMessage().getText(),
                 "MESSAGE"
         );
-        messageRepository.createNewMessage(uidFirebase, chatModelOpt.get().getId(), saveUserMessageDTO);
+        messageRepository.createNewMessage(uidFirebase, chatModelDTO.getId(), saveUserMessageDTO);
 
         // Сохраняем ответ от нейросети в чате в бд
-        MessageModelDTO messageNeuroModelDTO = messageRepository.createNewMessage(uidFirebase, chatModelOpt.get().getId(), saveNeuroMessageDTO);
-        userRepository.mockResponseUser.get((int) (mockBackendConfig.getUserId()-1))
-                .setMoney(userRepository.mockResponseUser.get((int) (mockBackendConfig.getUserId()-1))
-                        .getMoney()-totalCost);
+        MessageModelDTO messageNeuroModelDTO = messageRepository.createNewMessage(uidFirebase, chatModelDTO.getId(), saveNeuroMessageDTO);
+        userModelDTO.setMoney(userModelDTO.getMoney()-totalCost);
 
         // Возввращаем ответ
-        MessageGenerateResponse response = new MessageGenerateResponse(
+        return new MessageGenerateResponse(
                 new MessageGenerateResponse.MessageRequest(
                         messageNeuroModelDTO.getId(),
                         messageNeuroModelDTO.getText(),
@@ -196,13 +191,11 @@ public class NeuroMockMessageService implements MessageService{
                 ),
                 new MessageGenerateResponse.User(
                         isUpdated,
-                        userModelOpt.get().getMemory(),
+                        userModelDTO.getMemory(),
                         totalCost,
-                        userRepository.mockResponseUser.get((int) (mockBackendConfig.getUserId()-1)).getMoney()
+                        userModelDTO.getMoney()
                 )
         );
-        logger.info("Created message: " + response.toString());
-        return response;
     }
 
     @Override
@@ -211,7 +204,7 @@ public class NeuroMockMessageService implements MessageService{
     }
 
     @Override
-    public List<MessageModelDTO> newGetMessagesByChatId(String uidFirebase, Long chatId) throws InterruptedException {
+    public List<MessageModelDTO> getMessagesByChatId(String uidFirebase, Long chatId) throws InterruptedException {
         // Имитация ожидания запроса
         Thread.sleep(mockBackendConfig.getDelay());
 
