@@ -1,3 +1,6 @@
+all_code_java.txt
+src/main/java/com/promts/promts_test_server/promts_generator/features/openrouter/config/OpenRouterConfig.java
+
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar

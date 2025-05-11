@@ -1,0 +1,73 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-model-uri-table
+      author: promts
+      changes:
+        - createTable:
+            tableName: model_uri
+            remarks: "Справочник нейросетей"
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: system_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: cost_request_rub
+                  type: DECIMAL(10,4)
+              - column:
+                  name: cost_input_tokens_rub
+                  type: DECIMAL(10,4)
+              - column:
+                  name: cost_output_tokens_rub
+                  type: DECIMAL(10,4)
+              - column:
+                  name: max_output_tokens
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: max_context
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: min_rubles
+                  type: DECIMAL(10,4)
+              - column:
+                  name: rule_generation
+                  type: TEXT
+              - column:
+                  name: is_using_rules
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: date_edit
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: date_create
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false

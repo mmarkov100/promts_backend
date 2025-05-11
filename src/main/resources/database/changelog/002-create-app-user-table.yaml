@@ -1,0 +1,87 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-create-app-user-table
+      author: promts
+      changes:
+        - createTable:
+            tableName: app_user
+            remarks: "Основные сведения о пользователе"
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: uid_firebase
+                  type: VARCHAR(128)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: role
+                  type: VARCHAR(16)
+                  defaultValue: 'USER'
+                  constraints:
+                    nullable: false
+              - column:
+                  name: standard_model_uri_id
+                  type: BIGINT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: true
+              - column:
+                  name: money
+                  type: DECIMAL(10,4)
+                  defaultValueNumeric: 20
+                  constraints:
+                    nullable: false
+              - column:
+                  name: memory
+                  type: TEXT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: memory_enabled
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: ai_can_update_memory
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: date_create
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: app_user
+            baseColumnNames: standard_model_uri_id
+            referencedTableName: model_uri
+            referencedColumnNames: id
+            constraintName: fk_user_standard_model
+            onDelete: SET NULL
+
+        - addUniqueConstraint:
+            tableName: app_user
+            columnNames: email
+            constraintName: uq_app_user_email
+
+        - addUniqueConstraint:
+            tableName: app_user
+            columnNames: uid_firebase
+            constraintName: uq_app_user_uid
