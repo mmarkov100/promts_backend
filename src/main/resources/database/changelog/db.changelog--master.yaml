@@ -1,7 +1,22 @@
 databaseChangeLog:
-  # 0️⃣  сначала справочник нейросетей
+
   - include:
       file: database/changelog/001-create-model-uri-table.yaml
-  # 1️⃣  потом таблица пользователей с FK
+
   - include:
       file: database/changelog/002-create-app-user-table.yaml
+
+  - include:
+      file: database/changelog/003-create-app-settings-table.yaml
+
+  - include:
+      file: database/changelog/004-create-chat-bot-table.yaml
+
+  - include:
+      file: database/changelog/005-create-chat-table.yaml
+
+  - include:
+      file: database/changelog/006-create-message-table.yaml
+
+  - include:
+      file: database/changelog/007-create-payment-transaction-table.yaml

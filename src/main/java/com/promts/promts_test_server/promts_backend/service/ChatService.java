@@ -39,7 +39,7 @@ public class ChatService {
 
     public ChatModelDTO newUpdateChatSettings(String uidFirebase, UpdateChatSettingsDTO updateChatSettingsDTO) throws InterruptedException {
 
-        return chatRepository.newUpdateChatSettings(uidFirebase, updateChatSettingsDTO);
+        return chatRepository.updateChatSettings(uidFirebase, updateChatSettingsDTO);
     }
 
     public SuccessMessageDTO deleteChatByChatId(String uidFirebase, long chatId) throws InterruptedException {

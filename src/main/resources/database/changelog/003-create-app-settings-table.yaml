@@ -1,0 +1,69 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-create-app-settings-table
+      author: your-name
+      changes:
+        - createSequence:
+            sequenceName: app_settings_id_seq
+            startValue: 1
+        - createTable:
+            tableName: app_settings
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: standard_model_uri_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: standard_model_uri_memory_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: msg_cost_commission_ampl
+                  type: DOUBLE PRECISION
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sys_msg_cost_commission_ampl
+                  type: DOUBLE PRECISION
+                  constraints:
+                    nullable: false
+              - column:
+                  name: start_money_rub
+                  type: NUMERIC(10,4)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: app_generation_rules
+                  type: TEXT
+              - column:
+                  name: is_use_generation_rules
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+              - column:
+                  name: date_create
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+        - addForeignKeyConstraint:
+            constraintName: fk_appsettings_std_model
+            baseTableName: app_settings
+            baseColumnNames: standard_model_uri_id
+            referencedTableName: model_uri
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            constraintName: fk_appsettings_std_memory_model
+            baseTableName: app_settings
+            baseColumnNames: standard_model_uri_memory_id
+            referencedTableName: model_uri
+            referencedColumnNames: id
+        - addUniqueConstraint:
+            tableName: app_settings
+            columnNames: id
+            constraintName: uq_appsettings_singleton

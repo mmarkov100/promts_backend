@@ -34,7 +34,7 @@ public class ModelChatRepository implements ChatRepository{
     }
 
     @Override
-    public ChatModelDTO newUpdateChatSettings(String uidFirebase, UpdateChatSettingsDTO updateChatSettingsDTO) throws InterruptedException {
+    public ChatModelDTO updateChatSettings(String uidFirebase, UpdateChatSettingsDTO updateChatSettingsDTO) throws InterruptedException {
         return null;
     }
 

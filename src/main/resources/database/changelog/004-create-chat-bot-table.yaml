@@ -1,0 +1,43 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004-create-chat-bot-table
+      author: your-name
+      changes:
+        - createSequence:
+            sequenceName: chat_bot_id_seq
+            startValue: 1
+        - createTable:
+            tableName: chat_bot
+            columns:
+              - column: { name: id, type: BIGINT, autoIncrement: true, constraints: { primaryKey: true } }
+              - column: { name: user_id, type: BIGINT }
+              - column: { name: model_uri_id, type: BIGINT, constraints: { nullable: false } }
+              - column: { name: chat_bot_name, type: VARCHAR(255), constraints: { nullable: false } }
+              - column: { name: chat_bot_desc, type: TEXT }
+              - column: { name: hello_message, type: TEXT }
+              - column: { name: temperature, type: DOUBLE PRECISION, constraints: { nullable: false } }
+              - column: { name: context, type: TEXT }
+              - column: { name: is_selected_by_redact, type: BOOLEAN, defaultValueBoolean: false }
+              - column: { name: can_use_memory, type: BOOLEAN, defaultValueBoolean: true }
+              - column: { name: can_update_memory, type: BOOLEAN, defaultValueBoolean: true }
+              - column: { name: can_edit_model_uri, type: BOOLEAN, defaultValueBoolean: true }
+              - column: { name: can_edit_context, type: BOOLEAN, defaultValueBoolean: true }
+              - column: { name: date_edit, type: TIMESTAMP }
+              - column: { name: date_create, type: TIMESTAMP, defaultValueComputed: CURRENT_TIMESTAMP }
+        - addForeignKeyConstraint:
+            baseTableName: chat_bot
+            baseColumnNames: user_id
+            referencedTableName: app_user
+            referencedColumnNames: id
+            constraintName: fk_chatbot_user
+        - addForeignKeyConstraint:
+            baseTableName: chat_bot
+            baseColumnNames: model_uri_id
+            referencedTableName: model_uri
+            referencedColumnNames: id
+            constraintName: fk_chatbot_model
+        - createIndex:
+            tableName: chat_bot
+            indexName: idx_chatbot_user
+            columns:
+              - column: { name: user_id }

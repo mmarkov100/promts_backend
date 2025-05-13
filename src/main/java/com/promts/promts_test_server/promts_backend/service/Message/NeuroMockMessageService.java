@@ -27,10 +27,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 @Service
 @Profile({"neuro", "dbmock"})
 public class NeuroMockMessageService implements MessageService{
+
+    private static final Logger logger = Logger.getLogger(NeuroMockMessageService.class.getName());
 
     private final MockBackendConfig mockBackendConfig;
     private final MessageRepository messageRepository;
@@ -71,31 +74,41 @@ public class NeuroMockMessageService implements MessageService{
 
     @Override
     public MessageGenerateResponse  generateMessage(String uidFirebase, NewMessageDTO newMessageDTO) throws InterruptedException {
+        logger.info("Checking neuro");
         // Определяем, существует ли такая нейросеть в бд
         Optional<NeuralNetworkDTO> neuralNetworkOpt = networkRepository.getAllNeuros(uidFirebase).stream()
                 .filter(neuro -> Objects.equals(neuro.getId(), newMessageDTO.getModelUriId()))
                 .findFirst();
 
+        logger.info("Checking Chat");
         // Определяем, существует ли такой чат в бд
         Optional<ChatModelDTO> chatModelOpt = mockDataStore.chats.stream()
-                .filter(chat -> Objects.equals(chat.getId(), newMessageDTO.getChatId()))
+                .filter(chat -> {
+                    logger.info("Checking chatid: " + chat.getId() + " " + newMessageDTO.getChatId());
+                    return Objects.equals(chat.getId(), newMessageDTO.getChatId());
+                })
                 .findFirst();
 
+        logger.info("Checking user");
         // Определеяем, существует ли такой пользователь в бд
         UserModelDTO userModelDTO = userRepository.getUser(uidFirebase);
 
+        logger.info("Checking");
         if (neuralNetworkOpt.isEmpty() || chatModelOpt.isEmpty()) {
             throw new GlobalException("NO_EXISTED_MODEL","Не существующая модель для генерации или нет такого чата");
         }
         NeuralNetworkDTO neuralNetworkDTO = neuralNetworkOpt.get();
         ChatModelDTO chatModelDTO = chatModelOpt.get();
 
+        logger.info("Set ModelUriId");
         // Обновляем нейросеть в соответствии с той, что указано в сообщении
         chatModelDTO.setModelUriId(newMessageDTO.getModelUriId());
 
+        logger.info("Getting Network name");
         // Получаем системное название нейросети
-        String networkName =neuralNetworkDTO.getSystemName();
+        String networkName = neuralNetworkDTO.getSystemName();
 
+        logger.info("Getting messages");
         // Получаем все сообщения чата
         List<MessageModelDTO> messages = messageRepository.getAllChatMessagesByChatId(uidFirebase, newMessageDTO.getChatId());
         List<MessageForGenerator> generatorMessages = new ArrayList<>();
@@ -112,6 +125,7 @@ public class NeuroMockMessageService implements MessageService{
 
         double totalCost = 0;
 
+        logger.info("Doing a memory request..");
         // Делаем запрос на генерацию памяти
         boolean isUpdated = false;
         ResponseGeneratedMessageDTO responseMemory;
@@ -126,11 +140,11 @@ public class NeuroMockMessageService implements MessageService{
                 String raw = responseMemory.getMessage().getText().stripLeading();
                 String memory;
 
-                if (raw.startsWith("ДА ")) {                       // «ДА» + текст на той же строке
+                if (raw.startsWith("ДА ")) {
                     memory = raw.substring(2).stripLeading();
                     isUpdated = true;
-                } else if (raw.startsWith("ДА\n") || raw.equals("ДА")) {  // «ДА» своей строкой
-                    memory = raw.replaceFirst("^ДА\\h*\\R+", "");  // \\h – горизонтальные пробелы, \\R – перевод строки
+                } else if (raw.startsWith("ДА\n") || raw.equals("ДА")) {
+                    memory = raw.replaceFirst("^ДА\\h*\\R+", "");
                     isUpdated = true;
                 } else {
                     memory = userMemory;
@@ -142,6 +156,7 @@ public class NeuroMockMessageService implements MessageService{
             throw new GlobalException("MEMORY_CHANGE_ERROR", "Ошибка при изменении памяти нейросетью");
         }
 
+        logger.info("Doing a message request..");
         // Делаем запрос на генерацию уже основного сообщения
         ResponseGeneratedMessageDTO responseMessage = new ResponseGeneratedMessageDTO();
         try {

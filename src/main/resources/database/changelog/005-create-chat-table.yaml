@@ -1,0 +1,63 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005-create-chat-table
+      author: max
+      changes:
+        - createSequence:
+            sequenceName: chat_id_seq
+            startValue: 1
+
+        - createTable:
+            tableName: chat
+            columns:
+              - column: { name: id,              type: BIGINT,          autoIncrement: true, constraints: { primaryKey: true } }
+              - column: { name: user_id,         type: BIGINT,          constraints: { nullable: false } }
+              - column: { name: chat_bot_id,     type: BIGINT }
+              - column: { name: model_uri_id,    type: BIGINT,          constraints: { nullable: false } }
+
+              - column: { name: chat_name,       type: VARCHAR(255),    constraints: { nullable: false } }
+              - column: { name: temperature,     type: DOUBLE PRECISION, constraints: { nullable: false } }
+              - column: { name: context,         type: TEXT }
+
+              - column: { name: starred_chat,            type: BOOLEAN, defaultValueBoolean: false }
+              - column: { name: can_use_memory,          type: BOOLEAN, defaultValueBoolean: true }
+              - column: { name: can_update_memory,       type: BOOLEAN, defaultValueBoolean: true }
+              - column: { name: can_edit_model_uri,      type: BOOLEAN, defaultValueBoolean: true }
+              - column: { name: can_edit_context,        type: BOOLEAN, defaultValueBoolean: true }
+              - column: { name: use_memory,              type: BOOLEAN, defaultValueBoolean: true }
+              - column: { name: update_memory,           type: BOOLEAN, defaultValueBoolean: true }
+
+              - column: { name: date_edit,      type: TIMESTAMP }
+              - column: { name: date_create,    type: TIMESTAMP, defaultValueComputed: CURRENT_TIMESTAMP }
+
+        - addForeignKeyConstraint:
+            constraintName: fk_chat_user
+            baseTableName: chat
+            baseColumnNames: user_id
+            referencedTableName: app_user
+            referencedColumnNames: id
+
+        - addForeignKeyConstraint:
+            constraintName: fk_chat_chatbot
+            baseTableName: chat
+            baseColumnNames: chat_bot_id
+            referencedTableName: chat_bot
+            referencedColumnNames: id
+            onDelete: SET NULL
+
+        - addForeignKeyConstraint:
+            constraintName: fk_chat_model
+            baseTableName: chat
+            baseColumnNames: model_uri_id
+            referencedTableName: model_uri
+            referencedColumnNames: id
+
+        - createIndex:
+            tableName: chat
+            indexName: idx_chat_user
+            columns: [ { column: { name: user_id } } ]
+
+        - createIndex:
+            tableName: chat
+            indexName: idx_chat_bot
+            columns: [ { column: { name: chat_bot_id } } ]

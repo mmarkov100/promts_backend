@@ -19,7 +19,7 @@ import java.util.Objects;
 import java.util.logging.Logger;
 
 @Repository
-@Profile({"mock", "neuro", "dbmock"})
+@Profile({"mock", "neuro"})
 public class MockChatRepository implements ChatRepository{
 
     private final MockChatBotRepository mockChatBotRepository;
@@ -129,8 +129,8 @@ public class MockChatRepository implements ChatRepository{
     }
 
     @Override
-    public ChatModelDTO newUpdateChatSettings(String uidFirebase,
-                                              UpdateChatSettingsDTO dto) throws InterruptedException {
+    public ChatModelDTO updateChatSettings(String uidFirebase,
+                                           UpdateChatSettingsDTO dto) throws InterruptedException {
         Thread.sleep(mockBackendConfig.getDelay());
 
         ChatModelDTO chat = findChatOrThrow(dto.getChatId());

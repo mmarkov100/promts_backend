@@ -13,6 +13,6 @@ public interface ChatRepository {
     ChatModelDTO createChatWithChatBot(String uidFirebase, CreateChatWithChatBotDTO createChatWithChatBotDTO) throws InterruptedException;
     List<ChatModelDTO> newGetUserChats(String uidFirebase)  throws InterruptedException;
     ChatModelDTO getChatByChatId (String uidFirebase, Long chatId) throws InterruptedException;
-    ChatModelDTO newUpdateChatSettings(String uidFirebase, UpdateChatSettingsDTO updateChatSettingsDTO) throws InterruptedException;
+    ChatModelDTO updateChatSettings(String uidFirebase, UpdateChatSettingsDTO updateChatSettingsDTO) throws InterruptedException;
     SuccessMessageDTO deleteChatByChatId(String uidFirebase, long chatId) throws InterruptedException;
 }

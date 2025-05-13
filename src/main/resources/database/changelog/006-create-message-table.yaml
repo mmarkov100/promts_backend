@@ -1,0 +1,57 @@
+databaseChangeLog:
+  - changeSet:
+      id: 006-enable-pgvector
+      author: max
+      changes:
+        - sql:
+            splitStatements: false
+            sql: CREATE EXTENSION IF NOT EXISTS vector;
+
+  - changeSet:
+      id: 006-create-message-table
+      author: max
+      changes:
+        - createSequence:
+            sequenceName: message_id_seq
+            startValue: 1
+
+        - createTable:
+            tableName: message
+            columns:
+              - column: { name: id,            type: BIGINT,          autoIncrement: true, constraints: { primaryKey: true } }
+              - column: { name: chat_id,       type: BIGINT,          constraints: { nullable: false } }
+              - column: { name: model_uri_id,  type: BIGINT }
+              - column: { name: embedding,     type: VECTOR(1536) }   # подставьте размер вашей модели
+              - column: { name: old_message,   type: BOOLEAN,         defaultValueBoolean: false }
+              - column: { name: role,          type: VARCHAR(32),     constraints: { nullable: false } }
+              - column: { name: text,          type: TEXT,            constraints: { nullable: false } }
+              - column: { name: type,          type: VARCHAR(32),     constraints: { nullable: false } }
+              - column: { name: date_create,   type: TIMESTAMP,       defaultValueComputed: CURRENT_TIMESTAMP }
+
+        - addForeignKeyConstraint:
+            constraintName: fk_message_chat
+            baseTableName: message
+            baseColumnNames: chat_id
+            referencedTableName: chat
+            referencedColumnNames: id
+
+        - addForeignKeyConstraint:
+            constraintName: fk_message_model
+            baseTableName: message
+            baseColumnNames: model_uri_id
+            referencedTableName: model_uri
+            referencedColumnNames: id
+
+        - createIndex:
+            tableName: message
+            indexName: idx_message_chat
+            columns: [ { column: { name: chat_id } } ]
+
+        # индекс для быстрого поиска по вектору (опционально)
+        - sql:
+            splitStatements: false
+            sql: |
+              CREATE INDEX IF NOT EXISTS idx_message_embedding
+              ON message
+              USING ivfflat (embedding vector_cosine_ops)
+              WITH (lists = 100);

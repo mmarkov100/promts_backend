@@ -1,7 +1,9 @@
 package com.promts.promts_test_server.promts_db.service.user;
 
 import com.promts.promts_test_server.promts_db.dto.user.outbound.AppUserDto;
+import com.promts.promts_test_server.promts_db.entity.app_settings.AppSettings;
 import com.promts.promts_test_server.promts_db.entity.user.AppUser;
+import com.promts.promts_test_server.promts_db.repository.AppSettingsRepository;
 import com.promts.promts_test_server.promts_db.repository.AppUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,30 +15,36 @@ import java.math.BigDecimal;
 @RequiredArgsConstructor
 public class AppUserService {
 
-    private final AppUserRepository repo;
+    private final AppUserRepository repoUser;
+    private final AppSettingsRepository repoSettings;
 
     public AppUserDto updateUserSettings(AppUserDto dto) {
         AppUser userDTO = fromDto(dto);
-        AppUser user = repo.findByUidFirebase(dto.getUidFirebase()).orElseThrow();
+        AppUser user = repoUser.findByUidFirebase(dto.getUidFirebase()).orElseThrow();
 
         user.setMemory(userDTO.getMemory());
         user.setMemoryEnabled(userDTO.isMemoryEnabled());
         user.setAiCanUpdateMemory(userDTO.isAiCanUpdateMemory());
         user.setStandardModelUriId(userDTO.getStandardModelUriId());
 
-        return toDto(repo.save(user));
+        return toDto(repoUser.save(user));
     }
 
     public AppUserDto createUser(AppUserDto dto) {
         AppUser user = fromDto(dto);
-        user.setStandardModelUriId(0L);
+        AppSettings settings = repoSettings.findById(0L).orElseThrow();
+
+        user.setStandardModelUriId(settings.getStandardModelUri().getId());
+        user.setAiCanUpdateMemory(true);
+        user.setMemoryEnabled(true);
+        user.setMoney(settings.getStartMoneyRub());
         user.setMemory("");
 
-        return toDto(repo.save(user));
+        return toDto(repoUser.save(user));
     }
 
     public AppUserDto findByUidFirebase(String uidFirebase) {
-        return toDto(repo.findByUidFirebase(uidFirebase).orElseThrow());
+        return toDto(repoUser.findByUidFirebase(uidFirebase).orElseThrow());
     }
 
     /* ------- маппинг -------- */
