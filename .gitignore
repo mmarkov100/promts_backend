@@ -1,3 +1,5 @@
+src/main/resources/application.properties
+src/main/resources/testproject-f64b4-firebase-adminsdk-82czt-fcb1ec0955.json
 src/main/java/com/promts/promts_test_server/promts_generator/features/yandexgpt/config/YandexConfig.java
 all_code_java.txt
 src/main/java/com/promts/promts_test_server/promts_generator/features/openrouter/config/OpenRouterConfig.java
