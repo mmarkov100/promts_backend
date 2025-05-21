@@ -3,8 +3,10 @@ package com.promts.promts_test_server.promts_backend.controller;
 import com.promts.promts_test_server.promts_backend.config.MockBackendConfig;
 import com.promts.promts_test_server.promts_backend.dto.Auth.inboind.EmailAndPasswordDTO;
 import com.promts.promts_test_server.promts_backend.service.Auth.AuthService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.logging.Logger;
@@ -24,6 +26,7 @@ public class AuthController {
     // Проверка актуальности токена. Нужен, чтобы при заходе на сайт если токен актуальный сразу переключалось на главный экран
     //TODO Обратно поменять на гет запрос, а то нгрок хуета какая-то
     @PostMapping("/tokencheck")
+    @Validated
     public ResponseEntity<?> tokenCheck(@RequestHeader String authorization) throws RuntimeException {
 
         logger.info("Checking JWTToken..");
@@ -32,7 +35,7 @@ public class AuthController {
     }
 
     @PostMapping("/reg")
-    public ResponseEntity<?> regUser(@RequestBody EmailAndPasswordDTO emailAndPasswordDTO) throws RuntimeException{
+    public ResponseEntity<?> regUser(@Valid @RequestBody EmailAndPasswordDTO emailAndPasswordDTO) throws RuntimeException{
 
         logger.info("Registration new user..");
 
@@ -40,7 +43,7 @@ public class AuthController {
     }
 
     @PostMapping("/log")
-    public ResponseEntity<?> logUser(@RequestBody EmailAndPasswordDTO emailAndPasswordDTO) throws RuntimeException{
+    public ResponseEntity<?> logUser(@Valid @RequestBody EmailAndPasswordDTO emailAndPasswordDTO) throws RuntimeException{
 
         logger.info("Logging user.. : ");
 

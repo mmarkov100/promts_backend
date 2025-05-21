@@ -16,7 +16,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Repository
-@Profile({"mock", "neuro", "dbmock"})
+@Profile({"mock", "neuro", "dbmock", "firebase"})
 public class MockMessageRepository implements MessageRepository{
 
     private final MockBackendConfig mockBackendConfig;

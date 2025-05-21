@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Component
-@Profile({"mock", "neuro", "dbmock"})
+@Profile({"mock", "neuro", "dbmock", "firebase"})
 public class MockDataStore {
     public Integer chatCounter = 0;
     public final List<ChatModelDTO> chats = new CopyOnWriteArrayList<>();

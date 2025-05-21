@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 
 
 @Service
-@Profile({"dbmock"})
+@Profile({"dbmock", "firebase"})
 public class DBMockMessageService implements MessageService {
 
     private static final Logger logger = Logger.getLogger(DBMockMessageService.class.getName());

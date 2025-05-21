@@ -29,7 +29,7 @@ public class DBMockAuthRepository implements AuthRepository{
     }
 
     @Override
-    public UserModelDTO registerUser(String email) {
+    public UserModelDTO registerUser(String email, String password) {
         UserModelDTO newUser = new UserModelDTO();
         newUser.setEmail(email);
         newUser.setUidFirebase(email);

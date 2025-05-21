@@ -15,7 +15,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 @Repository
-@Profile({"dbmock"})
+@Profile({"dbmock", "firebase"})
 public class DBMockUserRepository implements  UserRepository{
 
     private final RestTemplate restTemplate;

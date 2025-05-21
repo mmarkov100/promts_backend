@@ -16,7 +16,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 
 @Repository
-@Profile({"dbmock"})
+@Profile({"dbmock", "firebase"})
 public class DBMockNeuralNetworkRepository implements NeuralNetworkRepository{
 
     private final RestTemplate restTemplate;

@@ -1,11 +1,15 @@
 package com.promts.promts_test_server.promts_db.entity.user;
 
+import com.promts.promts_test_server.promts_db.entity.chat.Chat;
+import com.promts.promts_test_server.promts_db.entity.chatbot.ChatBot;
+import com.promts.promts_test_server.promts_db.entity.transaction.PaymentTransaction;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "app_user")
@@ -54,4 +58,13 @@ public class AppUser {
     @CreationTimestamp
     @Column(name = "date_create", nullable = false, updatable = false)
     private LocalDateTime dateCreate = LocalDateTime.now();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Chat> chats;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ChatBot> chatBots;         // если нужно
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PaymentTransaction> transactions; // если нужно
 }

@@ -36,7 +36,6 @@ public class DBMockAuthService implements AuthService {
      */
     @Override
     public String getUidFirebaseAndValidate(String authorization) {
-        authorization = authorization.split(" ")[1];
         logger.log(Level.INFO, "Attempting to validate token (uidFirebase): " + authorization);
         if (authorization == null || authorization.isEmpty()) {
             logger.log(Level.WARNING, "Authorization token is empty or null.");
@@ -81,7 +80,7 @@ public class DBMockAuthService implements AuthService {
 
         // 2. Delegate to AuthRepository to perform the registration via HTTP call
         // DBMockAuthRepository will set uidFirebase = email
-        UserModelDTO registeredUserDTO = authRepository.registerUser(email);
+        UserModelDTO registeredUserDTO = authRepository.registerUser(email, password);
 
         if (registeredUserDTO != null && Objects.equals(registeredUserDTO.getEmail(), email) && Objects.equals(registeredUserDTO.getUidFirebase(), email)) {
             logger.log(Level.INFO, "User registered successfully via repository (mock): {0}", email);
@@ -98,7 +97,6 @@ public class DBMockAuthService implements AuthService {
      */
     @Override
     public SuccessMessageDTO actualiseToken(String authorization) {
-        authorization = authorization.split(" ")[1];
         logger.log(Level.INFO, "Attempting to actualise token (uidFirebase): {0}", authorization);
         if (authorization == null || authorization.isEmpty()) {
             logger.log(Level.WARNING, "Token actualization attempt with empty or null token.");

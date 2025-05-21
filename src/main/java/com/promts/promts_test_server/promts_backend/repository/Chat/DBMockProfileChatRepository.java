@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Repository
-@Profile("dbmock") // Активируем только для профиля dbmock
+@Profile({"dbmock", "firebase"}) // Активируем только для профиля dbmock
 public class DBMockProfileChatRepository implements ChatRepository {
 
     private final ChatServiceDB chatServiceDB;

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-@Profile({"mock", "neuro", "dbmock"})
+@Profile({"mock", "neuro", "dbmock", "firebase"})
 public class MockChatBotRepository implements ChatBotRepository {
 
     @Autowired
