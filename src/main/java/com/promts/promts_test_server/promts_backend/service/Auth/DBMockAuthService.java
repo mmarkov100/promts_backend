@@ -1,6 +1,5 @@
 package com.promts.promts_test_server.promts_backend.service.Auth;
 
-import com.promts.promts_test_server.promts_backend.config.MockBackendConfig;
 import com.promts.promts_test_server.promts_backend.dto.Auth.outbound.SuccessLoginDTO;
 import com.promts.promts_test_server.promts_backend.dto.Shared.outbound.SuccessMessageDTO;
 import com.promts.promts_test_server.promts_backend.dto.User.inbound.UserModelDTO;
@@ -23,13 +22,11 @@ public class DBMockAuthService implements AuthService {
     private static final Logger logger = Logger.getLogger(DBMockAuthService.class.getName());
     private final AuthRepository authRepository;
     private final AppUserService appUserService;
-    // private final MockBackendConfig mockBackendConfig; // Keep if needed for other configs
 
     @Autowired
-    public DBMockAuthService(AuthRepository authRepository, AppUserService appUserService, MockBackendConfig mockBackendConfig) {
+    public DBMockAuthService(AuthRepository authRepository, AppUserService appUserService) {
         this.authRepository = authRepository;
         this.appUserService = appUserService;
-        // this.mockBackendConfig = mockBackendConfig;
     }
 
     /**

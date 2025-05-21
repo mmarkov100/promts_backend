@@ -41,7 +41,7 @@ public class PaymentTransaction {
 
     /* --- финансовые данные ------------------------------------------------- */
 
-    /** Изменение баланса (– списание / + пополнение). */
+    /** Изменение баланса (–списание/+пополнение). */
     @Column(name = "change_money_rub", precision = 10, scale = 4, nullable = false)
     private BigDecimal changeMoneyRub;
 
@@ -60,9 +60,8 @@ public class PaymentTransaction {
     private BigDecimal costCommission;
 
     /** Тип операции. */
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 32)
-    private TransactionType type;
+    private String type;
 
     /** Текстовое пояснение. */
     @Column(columnDefinition = "TEXT", name = "description")
@@ -75,12 +74,4 @@ public class PaymentTransaction {
     private LocalDateTime dateCreate;
 
     /* ====================================================================== */
-
-    public enum TransactionType {
-        TOP_UP,              // Пополнение
-        WITHDRAWAL,          // Снятие
-        MESSAGE_GENERATION,  // Генерация сообщения
-        SYSTEM,              // Системное списание/зачисление
-        EMBEDDING            // Генерация эмбединга
-    }
 }

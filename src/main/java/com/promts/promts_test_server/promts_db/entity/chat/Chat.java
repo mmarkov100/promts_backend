@@ -1,6 +1,7 @@
 package com.promts.promts_test_server.promts_db.entity.chat;
 
 import com.promts.promts_test_server.promts_db.entity.chatbot.ChatBot;
+import com.promts.promts_test_server.promts_db.entity.message.Message;
 import com.promts.promts_test_server.promts_db.entity.modeluri.ModelUri;
 import com.promts.promts_test_server.promts_db.entity.user.AppUser;
 import jakarta.persistence.*;
@@ -9,6 +10,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Обычный диалог пользователя.
@@ -53,7 +55,7 @@ public class Chat {
 
     /* ------------ данные чата ------------------ */
 
-    @Column(name = "chat_name", nullable = false, length = 255)
+    @Column(name = "chat_name", nullable = false)
     private String chatName;
 
     private double temperature;
@@ -82,4 +84,7 @@ public class Chat {
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime dateCreate;
+
+    @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Message> messages;
 }

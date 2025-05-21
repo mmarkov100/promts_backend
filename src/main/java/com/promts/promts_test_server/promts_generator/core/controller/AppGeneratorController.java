@@ -3,6 +3,7 @@ package com.promts.promts_test_server.promts_generator.core.controller;
 
 import com.promts.promts_test_server.promts_generator.core.dto.inbound.RequestGeneratorDTO;
 import com.promts.promts_test_server.promts_generator.core.dto.outbound.ResponseDTO;
+import com.promts.promts_test_server.promts_generator.features.yandexgpt.service.YandexGptService;
 import com.promts.promts_test_server.shared.exception.GlobalException;
 import com.promts.promts_test_server.promts_generator.features.openrouter.service.GPT4oMiniService;
 import com.promts.promts_test_server.promts_generator.features.openrouter.service.GPTo4MiniHighService;
@@ -25,6 +26,8 @@ public class AppGeneratorController {
     private GPT4oMiniService gpt4oMiniService;
     @Autowired
     private GPTo4MiniHighService gpto4MiniHighService;
+    @Autowired
+    private YandexGptService yandexGptService;
 
     @GetMapping("/health")
     public Map<String, String> healthCheck() {
@@ -45,6 +48,11 @@ public class AppGeneratorController {
             }
             case "openai/o4-mini-high" -> {
                 result = gpto4MiniHighService.serviceMessage(requestGeneratorDTO);
+                logger.info("result: {}", result.toString());
+                yield ResponseEntity.ok().body(result);
+            }
+            case "yandexgpt", "yandexgpt-lite" -> {
+                result = yandexGptService.serviceMessage(requestGeneratorDTO);
                 logger.info("result: {}", result.toString());
                 yield ResponseEntity.ok().body(result);
             }

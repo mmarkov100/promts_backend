@@ -16,6 +16,6 @@ public class ModelUriController {
 
     @GetMapping
     public List<ModelUriDto> all() {
-        return service.findAll();
+        return service.findAllDto();
     }
 }

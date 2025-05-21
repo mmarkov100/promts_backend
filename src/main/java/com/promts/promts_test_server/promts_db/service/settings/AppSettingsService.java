@@ -11,13 +11,12 @@ public class AppSettingsService {
 
     private final AppSettingsRepository repo;
 
-    /** Всегда возвращаем единственную строку (id=1). */
     public AppSettings get() {
-        return repo.findById(1L).orElseThrow();
+        return repo.findById(0L).orElseThrow();
     }
 
     public AppSettings update(AppSettings newSettings) {
-        newSettings.setId(1L);
+        newSettings.setId(0L);
         return repo.save(newSettings);
     }
 }

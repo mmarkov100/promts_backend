@@ -5,10 +5,7 @@ import com.promts.promts_test_server.promts_db.entity.chat.Chat;
 import com.promts.promts_test_server.promts_db.entity.chatbot.ChatBot;
 import com.promts.promts_test_server.promts_db.entity.modeluri.ModelUri;
 import com.promts.promts_test_server.promts_db.entity.user.AppUser;
-import com.promts.promts_test_server.promts_db.repository.AppUserRepository;
-import com.promts.promts_test_server.promts_db.repository.ChatBotRepository;
-import com.promts.promts_test_server.promts_db.repository.ChatRepository;
-import com.promts.promts_test_server.promts_db.repository.ModelUriRepository;
+import com.promts.promts_test_server.promts_db.repository.*;
 import com.promts.promts_test_server.shared.exception.GlobalException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -94,5 +91,16 @@ public class ChatServiceDB {
         }
 
         repo.deleteById(chatId);
+    }
+
+    public Chat updateChatModelUri(Long id, Long modelUriId, String uidFirebase) {
+        AppUser user = userRepo.findByUidFirebase(uidFirebase).orElseThrow();
+        Chat chat = repo.findById(id).orElseThrow();
+        if (!Objects.equals(user.getId(), chat.getUser().getId())) {
+            throw new GlobalException("USER_NOT_EXPECTED", "Такого чата нет у пользователя");
+        }
+
+        chat.setModelUri(modelRepo.getReferenceById(modelUriId));
+        return repo.save(chat);
     }
 }

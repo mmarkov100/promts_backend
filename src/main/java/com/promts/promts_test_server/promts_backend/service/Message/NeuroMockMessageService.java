@@ -30,7 +30,7 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 @Service
-@Profile({"neuro", "dbmock"})
+@Profile({"neuro"})
 public class NeuroMockMessageService implements MessageService{
 
     private static final Logger logger = Logger.getLogger(NeuroMockMessageService.class.getName());
